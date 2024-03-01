@@ -83,21 +83,51 @@ class Database {
         this.#operationQueue = new DatabaseOperationQueue();
     }
 
-    query(sql, values) {
+    query(sql, values, multiple = false) {
         return new Promise((resolve, reject) => {
             this.pool.getConnection((err, connection) => {
                 if (err) {
                     reject(err);
                     return;
                 }
-                connection.query(sql, values, (error, results, fields) => {
-                    connection.release();
-                    if (error) {
-                        reject(error);
-                        return;
+                if(multiple) {
+                    let queries = sql.split(';');
+                    queries.pop();
+                    console.log(queries);
+                    for (let i = 0; i < queries.length; i++) {
+                        connection.query(queries[i], (error, results, fields) => {
+                            if (error) {
+                                reject(error);
+                                return;
+                            }
+                            if(i == queries.length - 1) {
+                                resolve(results);
+                            }
+                        });
                     }
-                    resolve(results);
-                });
+                } else {
+                    connection.query(sql, values, (error, results, fields) => {
+                        connection.release();
+                        if (error) {
+                            reject(error);
+                            return;
+                        }
+                        resolve(results);
+                    });
+                }
+            });
+        });
+    }
+
+    escape(sql) {
+        return new Promise((resolve, reject) => {
+            this.pool.getConnection((err, connection) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                let results = connection.escape(sql);
+                resolve(results);
             });
         });
     }

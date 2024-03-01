@@ -10,6 +10,11 @@ import reportRouter from './src/routes/report.js';
 import notificationRouter from './src/routes/notification.js';
 import chatRouter from './src/routes/chat.js';
 import scheduleRouter from './src/routes/schedule.js';
+import {DBinit} from './src/database/index.js';
+
+// initialize database at the start of the server (optional)
+// If you used this function, you don't need to call it again in the code to get no errors
+DBinit();
 
 const app = express();
 
