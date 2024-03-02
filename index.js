@@ -14,7 +14,7 @@ import {DBinit} from './src/database/index.js';
 
 // initialize database at the start of the server (optional)
 // If you used this function, you don't need to call it again in the code to get no errors
-DBinit();
+//DBinit();
 
 const app = express();
 

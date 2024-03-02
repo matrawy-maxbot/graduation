@@ -1,5 +1,5 @@
 import express from 'express';
-import {getUsers, getUser, createUser} from '../controllers/users.js';
+import {getUsers, getUser, createUser, updateUser, deleteUser} from '../controllers/users.js';
 import { call } from '../middleware/handleError.js';
 const router = express.Router();
 router.use(express.json());
@@ -7,6 +7,9 @@ router.use(express.json());
 router.get('/', call(getUsers));
 router.get('/:id', call(getUser));
 router.post('/', call(createUser));
+router.patch('/:id', call(updateUser));
+router.delete('/', call(deleteUser));
+router.delete('/:id', call(deleteUser));
 
 export default router;
 

@@ -1,5 +1,5 @@
 import { sendError } from '../middleware/error.js';
-import { DBselect, DBinsert } from '../database/index.js';
+import { DBselect, DBinsert, DBupdate } from '../database/index.js';
 
 const getRatings = async ( req, res, next) => {
     
@@ -88,6 +88,14 @@ const createRating = async ( req, res, next) => {
     res.json(rating);
 
 };
+
+const updateRating = async ( req, res, next) => {
+
+    const id = "54321";
+    const rating = await DBupdate('ratings', {rating: Number.parseInt(req.params.rating, 10)}, {user_id: id, doctor_id: req.params.id});
+    res.json(rating);
+
+};
   
 export {
     getRatings,
@@ -95,5 +103,6 @@ export {
     getDoctorRatings,
     getUsersRatings,
     getUserRatings,
-    createRating
+    createRating,
+    updateRating
 };

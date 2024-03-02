@@ -1,5 +1,5 @@
 import { sendError } from '../middleware/error.js';
-import { DBinsert, DBselect } from '../database/index.js';
+import { DBinsert, DBselect, DBupdate, DBdelete } from '../database/index.js';
 import { getUsersRatings, getUserRatings } from './ratings.js';
 
 const getUsers = async ( req, res, next) => {
@@ -37,5 +37,23 @@ const createUser = async ( req, res, next) => {
     res.json(users);
 
 };
+
+const updateUser = async ( req, res, next) => {
+    
+    const users = await DBupdate('users', req.body, {id: req.params.id});
+    res.json(users);
+    
+};
+
+const deleteUser = async ( req, res, next) => {
+    let id = "";
+    if(req.params.id) {
+        id = req.params.id;
+    } else {
+        id = "22223";
+    }
+    const users = await DBdelete('users', {id: id});
+    res.json(users);
+};
   
-export {getUsers, getUser, createUser};
+export {getUsers, getUser, createUser, updateUser, deleteUser};

@@ -1,5 +1,5 @@
 import { sendError } from '../middleware/error.js';
-import { DBselect, DBinsert } from '../database/index.js';
+import { DBselect, DBinsert, DBdelete } from '../database/index.js';
 
 const getAppointments = async ( req, res, next) => {
     
@@ -85,6 +85,13 @@ const createAppointment = async ( req, res, next) => {
     res.json(appointment);
 
 };
+
+const deleteAppointment = async ( req, res, next) => {
+    
+    const appointment = await DBdelete('appointments', {id: req.params.id});
+    res.json(appointment);
+    
+};
   
 export {
     getAppointments, 
@@ -94,5 +101,6 @@ export {
     getDoctorAppointments, 
     getPatientsAppointments, 
     getPatientAppointments, 
-    createAppointment
+    createAppointment,
+    deleteAppointment
 };

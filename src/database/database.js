@@ -107,6 +107,7 @@ class Database {
                     }
                 } else {
                     connection.query(sql, values, (error, results, fields) => {
+                        console.log('Query executed:', sql, values);
                         connection.release();
                         if (error) {
                             reject(error);
@@ -220,6 +221,8 @@ class Database {
             `;
             const values = [...dataValues, ...conditionValues];
 
+            console.log(" ay haga : ", table, values);
+
             await this.#operationQueue.enqueueOperation({
                 execute: async () => {
                     let res = await this.query(sql, values);
@@ -234,9 +237,18 @@ class Database {
         }
     }
 
-    async update(table, data, condition, add_query = "") {
+    async update(table, data, condition, conditionMulti = "AND", add_query = "") {
         add_query = add_query ? this.pool.escape(add_query) : "";
-        const sql = `UPDATE ${table} SET ? WHERE ? ${add_query}`;
+        let conditionKeys = Object.keys(condition);
+        let sql = "";
+        if(conditionKeys.length > 1) {
+            let escap = await this.escape(condition);
+            escap = escap.replace(/, /g, " " + conditionMulti + " ");
+            sql = `UPDATE ${table} SET ? WHERE ${escap} ${add_query}`;
+            condition = "";
+        } else {
+            sql = `UPDATE ${table} SET ? WHERE ? ${add_query}`;
+        }
 
         try {
             await this.#operationQueue.enqueueOperation({

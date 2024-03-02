@@ -1,5 +1,5 @@
 import { sendError } from '../middleware/error.js';
-import { DBselect, DBinsert } from '../database/index.js';
+import { DBselect, DBinsert, DBupdate } from '../database/index.js';
 
 const getAdmins = async ( req, res, next) => {
 
@@ -31,5 +31,12 @@ const createAdmin = async ( req, res, next) => {
     res.json(admin);
 
 };
+
+const updateAdmin = async ( req, res, next) => {
+    
+    const admin = await DBupdate('admins', req.body, {id: req.params.id});
+    res.json(admin);
+    
+};
   
-export {getAdmins, getAdmin, createAdmin};
+export {getAdmins, getAdmin, createAdmin, updateAdmin};
