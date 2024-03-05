@@ -1,6 +1,7 @@
 import express from 'express';
 import env from './src/config/index.js';
 import loggerMiddleware from './src/middleware/logger.js';
+import login from './src/routes/login.js';
 import usersRouter from './src/routes/users.js';
 import adminsRouter from './src/routes/admins.js';
 import doctorsRouter from './src/routes/doctors.js';
@@ -20,6 +21,7 @@ const app = express();
 
 app.use(loggerMiddleware);
 
+app.use('/login', login);
 app.use('/users', usersRouter);
 app.use('/admins', adminsRouter);
 app.use('/doctors', doctorsRouter);

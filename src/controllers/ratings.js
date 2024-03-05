@@ -1,4 +1,5 @@
 import { sendError } from '../middleware/error.js';
+import { generateId } from '../middleware/id.js';
 import { DBselect, DBinsert, DBupdate } from '../database/index.js';
 
 const getRatings = async ( req, res, next) => {
@@ -80,6 +81,7 @@ const getUserRatings = async ( req, res, next, ret = true) => {
 
 const createRating = async ( req, res, next) => {
 
+    req.body.id = generateId();
     req.body.user_id = "ds432terg35";
     req.body.doctor_id = req.params.id;
     req.body.rating = Number.parseInt(req.params.rating, 10);

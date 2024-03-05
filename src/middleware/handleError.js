@@ -1,9 +1,9 @@
 import { sendError, handleError } from '../middleware/error.js';
 
-const call = (callback) => {
-    return (req, res, next) => {
+const call = (callback, ...args) => {
+    return async (req, res, next) => {
         try {
-            callback(req, res, next);
+            await callback(req, res, next, ...args);
         } catch (error) {
             handleError({ status:error.status , message: error.message, data:error.data, response: res});
         }

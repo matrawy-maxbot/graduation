@@ -1,4 +1,5 @@
 import { sendError } from '../middleware/error.js';
+import { generateId } from '../middleware/id.js';
 import { DBselect, DBinsert, DBdelete } from '../database/index.js';
 
 const getAppointments = async ( req, res, next) => {
@@ -25,6 +26,10 @@ const getUsersAppointments = async ( req, res, next) => {
 
 const getUserAppointments = async ( req, res, next) => {
     
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
     const appointments = await DBselect('appointments', '*', {owner_id: req.params.id});
     res.json(appointments);
 
@@ -47,6 +52,10 @@ const getDoctorsAppointments = async ( req, res, next) => {
 
 const getDoctorAppointments = async ( req, res, next) => {
     
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
     const appointments = await DBselect('appointments', '*', {doctor_id: req.params.id});
     res.json(appointments);
 
@@ -81,6 +90,9 @@ const getPatientAppointments = async ( req, res, next) => {
 const createAppointment = async ( req, res, next) => {
 
     console.log(req.body);
+    req.body.owner_id = req.owner.id;
+    req.body.doctor_id = req.params.id;
+    req.body.id = generateId();
     const appointment = await DBinsert('appointments', req.body);
     res.json(appointment);
 
@@ -92,6 +104,21 @@ const deleteAppointment = async ( req, res, next) => {
     res.json(appointment);
     
 };
+
+const checkAppointment = async ( req, res, next) => {
+        
+    const userORdoctor = req.owner.id;
+    const appointment = req.params.id;
+    const result = await DBselect('appointments', '*', {id: appointment});
+    if(result.length == 0) {
+        sendError({response:res, status:404, message:"Appointment not found"});
+    } else
+    if(result[0]?.owner_id == userORdoctor || result[0]?.doctor_id == userORdoctor) {
+        next();
+    } else {
+        sendError({response:res, status:403, message:"You are not authorized to access this appointment"});
+    }
+}
   
 export {
     getAppointments, 
@@ -102,5 +129,6 @@ export {
     getPatientsAppointments, 
     getPatientAppointments, 
     createAppointment,
-    deleteAppointment
+    deleteAppointment,
+    checkAppointment
 };

@@ -1,5 +1,5 @@
 import { sendError } from '../middleware/error.js';
-import { DBselect, DBinsert } from '../database/index.js';
+import { DBselect, DBinsert, DBupdate } from '../database/index.js';
 
 const getSchedules = async ( req, res, next) => {
     
@@ -19,6 +19,10 @@ const getSchedules = async ( req, res, next) => {
 
 const getDoctorSchedules = async ( req, res, next) => {
     
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
     const schedules = await DBselect('schedules', '*', {doctor_id: req.params.id});
     res.json(schedules);
 
@@ -33,4 +37,15 @@ const createSchedules = async ( req, res, next, ret = true) => {
 
 };
 
-export {getSchedules, getDoctorSchedules, createSchedules};
+const updateSchedules = async ( req, res, next) => {
+    
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
+    const schedules = await DBupdate('schedules', req.body, {doctor_id: req.params.id});
+    res.json(schedules);
+    
+};
+
+export {getSchedules, getDoctorSchedules, createSchedules, updateSchedules};

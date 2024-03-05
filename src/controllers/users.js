@@ -1,5 +1,8 @@
 import { sendError } from '../middleware/error.js';
 import { DBinsert, DBselect, DBupdate, DBdelete } from '../database/index.js';
+import { generateId } from '../middleware/id.js';
+import { hash } from '../middleware/hash.js';
+import { objectWithoutKey } from '../middleware/plugins.js';
 import { getUsersRatings, getUserRatings } from './ratings.js';
 
 const getUsers = async ( req, res, next) => {
@@ -22,6 +25,10 @@ const getUsers = async ( req, res, next) => {
 
 const getUser = async ( req, res, next) => {
 
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
     const users = await DBselect('users', '*', {id: req.params.id});
     const ratings = await getUserRatings(req, res, next, false);
     const user = ratings.filter(r => r.user_id == users[0].id);
@@ -33,6 +40,9 @@ const getUser = async ( req, res, next) => {
 const createUser = async ( req, res, next) => {
 
     console.log(req.body);
+    req.body.id = generateId();
+    req.body.pass = req.body.password || req.body.pass;
+    req.body.pass = await hash(req.body.pass);
     const users = await DBinsert('users', req.body);
     res.json(users);
 
@@ -40,17 +50,27 @@ const createUser = async ( req, res, next) => {
 
 const updateUser = async ( req, res, next) => {
     
-    const users = await DBupdate('users', req.body, {id: req.params.id});
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
+    const body = objectWithoutKey(req.body, 'pass');
+    const users = await DBupdate('users', body, {id: req.params.id});
     res.json(users);
     
 };
 
 const deleteUser = async ( req, res, next) => {
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
     let id = "";
     if(req.params.id) {
         id = req.params.id;
     } else {
-        id = "22223";
+        res.status(401).send("internal server");
+        return false;
     }
     const users = await DBdelete('users', {id: id});
     res.json(users);

@@ -1,4 +1,5 @@
 import { sendError } from '../middleware/error.js';
+import { generateId } from '../middleware/id.js';
 import { DBselect, DBinsert } from '../database/index.js';
 
 const getReports = async ( req, res, next) => {
@@ -25,6 +26,10 @@ const getUsersReports = async ( req, res, next) => {
 
 const getUserReports = async ( req, res, next) => {
     
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
     const reports = await DBselect('report', '*', {user_id: req.params.id});
     res.json(reports);
 
@@ -47,6 +52,10 @@ const getDoctorsReports = async ( req, res, next) => {
 
 const getDoctorReports = async ( req, res, next) => {
     
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
     const reports = await DBselect('report', '*', {doctor_id: req.params.id});
     res.json(reports);
 
@@ -83,11 +92,40 @@ const getPatientReports = async ( req, res, next) => {
 
 const createReport = async ( req, res, next) => {
 
-    console.log(req.body);
+    req.body.doctor_id = req.owner.id;
+    req.body.appointment_id = req.params.appId;
+    req.body.user_id = req.params.id;
+    req.body.id = generateId();
     const report = await DBinsert('report', req.body);
     res.json(report);
 
 };
 
+const checkReport = async ( req, res, next) => {
+
+    req.body.doctor_id = req.owner.id;
+    req.body.appointment_id = req.params.appId;
+    req.body.user_id = req.params.id;
+    const report = await DBselect('appointments', '*', "doctor_id = '" + req.owner.id + "' AND id = '" + req.params.appId + "' AND owner_id = '" + req.params.id + "'");
+    console.log("report : ",report);
+    if(report.length > 0) {
+        next();
+    } else {
+        sendError(res, 403, "You are not allowed to create a report for this appointment");
+    }
+
+}
+
+
   
-export {getReports, getUsersReports, getUserReports, getDoctorsReports, getDoctorReports, getPatientsReports, getPatientReports, createReport};
+export {
+    getReports,
+    getUsersReports,
+    getUserReports,
+    getDoctorsReports,
+    getDoctorReports,
+    getPatientsReports,
+    getPatientReports,
+    createReport,
+    checkReport
+};

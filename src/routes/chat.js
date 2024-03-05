@@ -1,10 +1,12 @@
 import express from 'express';
-import {getChat, createMessage} from '../controllers/chat.js';
+import { getChat, getChats, createMessage } from '../controllers/chat.js';
+import { checkToken, checkRole } from '../middleware/authentication.js';
 import { call } from '../middleware/handleError.js';
 const router = express.Router();
 router.use(express.json());
 
-router.get('/', call(getChat));
-router.post('/:id', call(createMessage));
+router.get('/', call(checkToken), call(checkRole, "admin"), call(getChats));
+router.get('/:id', call(checkToken), call(checkRole, "all"), call(getChat));
+router.post('/:id', call(checkToken), call(checkRole, "all"), call(createMessage));
 
 export default router;

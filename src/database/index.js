@@ -105,7 +105,7 @@ const DBinit = async () => {
         const databaseName = "graduation_project";
         let sql = `
          CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`admins\` (
-            \`id\` varchar(100) NOT NULL,
+            \`id\` varchar(17) NOT NULL,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL,
             \`pass\` varchar(50) NOT NULL,
@@ -125,7 +125,7 @@ const DBinit = async () => {
 
         
          CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`appointments\` (
-            \`id\` varchar(100) NOT NULL,
+            \`id\` varchar(17) NOT NULL,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL,
             \`age\` int(2) NOT NULL,
@@ -133,8 +133,8 @@ const DBinit = async () => {
             \`city\` varchar(30) NOT NULL,
             \`description\` mediumtext DEFAULT NULL,
             \`photos\` varchar(1000) DEFAULT NULL,
-            \`owner_id\` varchar(100) NOT NULL,
-            \`doctor_id\` varchar(100) NOT NULL,
+            \`owner_id\` varchar(17) NOT NULL,
+            \`doctor_id\` varchar(17) NOT NULL,
             \`department\` int(2) NOT NULL,
             \`app_date\` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
             \`created_at\` timestamp NOT NULL DEFAULT current_timestamp()
@@ -153,9 +153,9 @@ const DBinit = async () => {
 
         
          CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`chat\` (
-            \`id\` varchar(50) NOT NULL,
-            \`source\` varchar(50) NOT NULL,
-            \`destination\` varchar(50) NOT NULL,
+            \`id\` varchar(17) NOT NULL,
+            \`source\` varchar(17) NOT NULL,
+            \`destination\` varchar(17) NOT NULL,
             \`content\` text DEFAULT NULL,
             \`file\` varchar(200) DEFAULT NULL,
             \`created_at\` timestamp NOT NULL DEFAULT current_timestamp()
@@ -172,7 +172,7 @@ const DBinit = async () => {
           (2005, 24680, 12345, 'Alice, could you provide me with more details about the upcoming event?', NULL);
 
          CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`doctors\` (
-            \`id\` varchar(100) NOT NULL,
+            \`id\` varchar(17) NOT NULL,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL,
             \`pass\` varchar(50) NOT NULL,
@@ -194,9 +194,9 @@ const DBinit = async () => {
         
 
          CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`notifications\` (
-            \`id\` varchar(50) NOT NULL,
-            \`source\` varchar(50) NOT NULL,
-            \`destination\` varchar(50) NOT NULL,
+            \`id\` varchar(17) NOT NULL,
+            \`source\` varchar(17) NOT NULL,
+            \`destination\` varchar(17) NOT NULL,
             \`content\` text NOT NULL,
             \`created_at\` timestamp NOT NULL DEFAULT current_timestamp()
         );
@@ -214,8 +214,8 @@ const DBinit = async () => {
 
          CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`ratings\` (
             \`id\` int(11) NOT NULL,
-            \`doctor_id\` varchar(50) NOT NULL,
-            \`user_id\` varchar(50) NOT NULL,
+            \`doctor_id\` varchar(17) NOT NULL,
+            \`user_id\` varchar(17) NOT NULL,
             \`rating\` tinyint(1) NOT NULL,
             \`created_at\` timestamp NOT NULL DEFAULT current_timestamp()
         );
@@ -234,10 +234,10 @@ const DBinit = async () => {
 
 
          CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`report\` (
-            \`id\` varchar(50) NOT NULL,
-            \`doctor_id\` varchar(50) NOT NULL,
-            \`appointment_id\` varchar(50) NOT NULL,
-            \`user_id\` varchar(50) NOT NULL,
+            \`id\` varchar(17) NOT NULL,
+            \`doctor_id\` varchar(17) NOT NULL,
+            \`appointment_id\` varchar(17) NOT NULL,
+            \`user_id\` varchar(17) NOT NULL,
             \`diagnosis\` text DEFAULT NULL,
             \`reasons\` text DEFAULT NULL,
             \`advices\` text DEFAULT NULL,
@@ -258,7 +258,7 @@ const DBinit = async () => {
         
 
          CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`schedules\` (
-            \`doctor_id\` varchar(50) NOT NULL,
+            \`doctor_id\` varchar(17) NOT NULL,
             \`sunday\` varchar(12) DEFAULT NULL,
             \`monday\` varchar(12) DEFAULT NULL,
             \`tuesday\` varchar(12) DEFAULT NULL,
@@ -280,7 +280,7 @@ const DBinit = async () => {
         
 
          CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`users\` (
-            \`id\` varchar(100) NOT NULL,
+            \`id\` varchar(17) NOT NULL,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL,
             \`pass\` varchar(50) NOT NULL,
