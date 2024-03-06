@@ -7,6 +7,6 @@ router.use(express.json());
 
 router.get('/', call(checkToken), call(checkRole, "admin"), call(getChats));
 router.get('/:id', call(checkToken), call(checkRole, "all"), call(getChat));
-router.post('/:id', call(checkToken), call(checkRole, "all"), call(createMessage));
+router.post('/:id', call(checkToken), call(checkRole, ["all", "unsystem"]), call(createMessage));
 
 export default router;

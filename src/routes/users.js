@@ -12,7 +12,7 @@ router.get('/', call(checkToken), call(checkRole, "admin"), call(getUsers));
 router.get('/:id', call(checkToken), call(checkRole, "all"), call(getUser));
 router.post('/', call(checkToken), call(checkRole, "admin"), call(createUser));
 router.patch('/:id', call(checkToken), call(checkRole, "admin"), call(updateUser));
-router.delete('/', call(checkToken), call(checkRole, "admin"), call(deleteUser));
+//router.delete('/', call(checkToken), call(checkRole, "admin"), call(deleteUser));
 router.delete('/:id', call(checkToken), call(checkRole, "admin"), call(deleteUser));
 
 export default router;

@@ -11,7 +11,7 @@ router.get('/', call(checkToken), call(checkRole, "admin"), call(getDoctors));
 router.get('/:id', call(checkToken), call(checkRole, "all"), call(getDoctor));
 router.post('/', call(checkToken), call(checkRole, "admin"), call(createDoctor));
 router.patch('/:id', call(checkToken), call(checkRole, "admin"), call(updateDoctor));
-router.delete('/', call(checkToken), call(checkRole, "admin"), call(deleteDoctor));
+//router.delete('/', call(checkToken), call(checkRole, "admin"), call(deleteDoctor));
 router.delete('/:id', call(checkToken), call(checkRole, "admin"), call(deleteDoctor));
 
 export default router;

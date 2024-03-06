@@ -20,7 +20,7 @@ const _config = {
         port: process.env.DB_PORT || 3306
     },
     privateKEY: process.env.PRIVATE_KEY,
-    systemToken: process.env.SYSTEM_TOKEN
+    systemToken: process.env.ADMIN_TOKEN
 };
 
 export default _config;

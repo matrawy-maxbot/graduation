@@ -65,13 +65,7 @@ const deleteUser = async ( req, res, next) => {
     if(param == "me") {
         req.params.id = req.owner.id;
     }
-    let id = "";
-    if(req.params.id) {
-        id = req.params.id;
-    } else {
-        res.status(401).send("internal server");
-        return false;
-    }
+    let id = req.params.id;
     const users = await DBdelete('users', {id: id});
     res.json(users);
 };

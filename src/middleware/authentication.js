@@ -1,3 +1,4 @@
+import { sendError } from '../middleware/error.js';
 import jwt from 'jsonwebtoken';
 import env from '../config/index.js';
 import { checkUser } from '../controllers/login.js';
@@ -30,7 +31,8 @@ const verifyToken = (token) => {
 
 const checkToken = async ( req, res, next) => {
 
-    const authToken = req.headers.authorization;
+    const authToken = req.headers.authorization.replace("Bearer", "").replace(/\s+/g, "");
+    console.log("Auth Token : ", authToken, env.systemToken);
     if(authToken == env.systemToken){
         next();
         return false;
@@ -41,12 +43,14 @@ const checkToken = async ( req, res, next) => {
     } else {
         if(tkn.data === "Expired"){
             res.status(401).send("Token Expired");
-        } else res.status(401).send("Unauthorized");
+        } else {
+            res.status(401).send("Unauthorized");
+        }
     }
 }
 
 const checkRole = async ( req, res, next, role) => {
-    const authToken = req.headers.authorization;
+    const authToken = req.headers.authorization.replace("Bearer", "").replace(/\s+/g, "");
     const tkn = verifyToken(authToken);
     if(tkn.status || authToken == env.systemToken) {
         if(!role) {
@@ -60,6 +64,14 @@ const checkRole = async ( req, res, next, role) => {
         }
         console.log("Role : ", role, "User : ", user)
         if(authToken == env.systemToken) {
+            const url = req.originalUrl.split("/");
+            if(url.includes("me")) {
+                sendError({ status: 401, message: 'cannot access this route with system token', response:res });
+                return false;
+            } else if(role.includes("unsystem")) {
+                sendError({ status: 401, message: 'cannot access this route with system token', response:res });
+                return false;
+            }
             next();
             return false;
         }
@@ -87,7 +99,9 @@ const checkRole = async ( req, res, next, role) => {
     } else {
         if(tkn.data === "Expired"){
             res.status(401).send("Token Expired");
-        } else res.status(401).send("Unauthorized");
+        } else {
+            res.status(401).send("Unauthorized");
+        }
     }
 }
 

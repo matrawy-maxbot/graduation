@@ -63,12 +63,7 @@ const updateDoctor = async ( req, res, next) => {
 };
 
 const deleteDoctor = async ( req, res, next) => {
-    let id = "";
-    if(req.params.id) {
-        id = req.params.id;
-    } else {
-        id = "222555";
-    }
+    let id = req.params.id;
     const doctor = await DBdelete('doctors', {id: id});
     res.json(doctor);
 };
