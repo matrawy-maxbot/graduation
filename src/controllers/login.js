@@ -1,46 +1,46 @@
 import { sendError } from '../middleware/error.js';
+import { send } from '../middleware/send.js';
 import { generateToken } from '../middleware/authentication.js';
-import { hash, compare } from '../middleware/hash.js';
-import { DBselect, DBinsert, DBupdate } from '../database/index.js';
+import { compare } from '../middleware/hash.js';
+import { DBselect } from '../database/index.js';
 
 const login = async ( req, res, next) => {
-    try {
-        let { phone, pass, password } = req.body;
 
-        const user = await checkUser(phone, "phone");
-        console.log("User : ", user);
-
-        password = pass || password;
-
-        if(user) {
-            const compr = await compare(password, user.pass);
-            if(compr) {
-                const JWTToken = generateToken({id: user.id});
-                res.json({status:true, token:JWTToken});
-            } else {
-                res.json({status:false, error: "Password is incorrect"});
-            }
+    let { phone, pass, password } = req.body;
+    password = pass || password;
+    const user = await checkLogin(phone, "phone");
+    console.log("User : ", user);
+    if(user) {
+        console.log("password : ", password, user.pass);
+        const compr = await compare(password, user.pass);
+        console.log("compr : ", compr)
+        if(compr) {
+            const JWTToken = generateToken({id: user.id});
+            send(200, res, "success", {token:JWTToken});
+        } else {
+            sendError({status: 401, response:res, message: "Password is incorrect"});
         }
-        else {
-            res.json({status:false, error: "User not found"});
-        }
+    } else {
+        sendError({status: 404, response:res, message: "User not found"});
     }
-    catch (error) {
-        console.error("Error : ", error);
-        res.json({status:false, error: error?.message || error});
-    }
+
 }
 
-const checkUser = async (value, key) => {
+const checkLogin = async (value, key) => {
+
     try {
-        let user = await DBselect('admins', '*', {[key]: value});
+
+        let user = await DBselect('admins', '*', {[key]: value}).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+        if(!user) return false;
         let role = "admin";
         if(user.length == 0) {
-            user = await DBselect('doctors', '*', {[key]: value});
+            user = await DBselect('doctors', '*', {[key]: value}).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+            if(!user) return false;
             role = "doctor";
         }
         if(user.length == 0) {
-            user = await DBselect('users', '*', {[key]: value});
+            user = await DBselect('users', '*', {[key]: value}).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+            if(!user) return false;
             role = "user";
         }
         if(user.length == 0) {
@@ -48,11 +48,14 @@ const checkUser = async (value, key) => {
         }
         user[0].role = role;
         return user[0];
-    }
-    catch (error) {
-        console.error("Error : ", error);
+        
+    } catch (error) {
+
+        console.error(error);
         return false;
+        
     }
+    
 }   
 
-export {login, checkUser};
+export {login, checkLogin};

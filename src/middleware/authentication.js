@@ -1,7 +1,7 @@
 import { sendError } from '../middleware/error.js';
 import jwt from 'jsonwebtoken';
 import env from '../config/index.js';
-import { checkUser } from '../controllers/login.js';
+import { checkLogin } from '../controllers/login.js';
 
 const generateToken = (payload, expire) => {
     const privateKey = env.privateKEY;
@@ -10,7 +10,7 @@ const generateToken = (payload, expire) => {
 
 const verifyToken = (token) => {
     try {
-        token = token.replace("Bearer", "").replace(/\s+/g, "");
+        token = token.replace(/Bearer/i, "").replace(/\s+/g, "");
         const header = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
         const privateKey = env.privateKEY;
         const tkn = jwt.verify(header + "." + token, privateKey);
@@ -27,11 +27,9 @@ const verifyToken = (token) => {
     }
 }
 
-
-
 const checkToken = async ( req, res, next) => {
 
-    const authToken = req.headers.authorization.replace("Bearer", "").replace(/\s+/g, "");
+    const authToken = req.headers.authorization.replace(/Bearer/i, "").replace(/\s+/g, "");
     console.log("Auth Token : ", authToken, env.systemToken);
     if(authToken == env.systemToken){
         next();
@@ -44,20 +42,21 @@ const checkToken = async ( req, res, next) => {
         if(tkn.data === "Expired"){
             res.status(401).send("Token Expired");
         } else {
+            console.log("leeeeeeeeeeh");
             res.status(401).send("Unauthorized");
         }
     }
 }
 
 const checkRole = async ( req, res, next, role) => {
-    const authToken = req.headers.authorization.replace("Bearer", "").replace(/\s+/g, "");
+    const authToken = req.headers.authorization.replace(/Bearer/i, "").replace(/\s+/g, "");
     const tkn = verifyToken(authToken);
     if(tkn.status || authToken == env.systemToken) {
         if(!role) {
             res.status(401).send("internal server");
             return false;
         }
-        let user = await checkUser(tkn.data.id, "id");
+        let user = await checkLogin(tkn.data.id, "id");
         if(user.length == 0) {
             res.status(401).send("User not found");
             return false;
@@ -76,7 +75,7 @@ const checkRole = async ( req, res, next, role) => {
             return false;
         }
         if(typeof role == "array" || typeof role == "object") {
-            if(role.includes(user.role)) {
+            if(role.includes(user.role) || role.includes("all")) {
                 req.owner = user;
                 next();
             } else {

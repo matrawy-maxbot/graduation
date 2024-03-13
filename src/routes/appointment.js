@@ -1,5 +1,7 @@
 import express from 'express';
-import {getAppointments, getUsersAppointments, getUserAppointments, getDoctorsAppointments, getDoctorAppointments, getPatientsAppointments, getPatientAppointments, createAppointment, deleteAppointment, checkAppointment} from '../controllers/appointment.js';
+import { getAppointments, getUsersAppointments, getUserAppointments, getDoctorsAppointments, getDoctorAppointments, getPatientsAppointments, getPatientAppointments, createAppointment, deleteAppointment, checkAppointment } from '../controllers/appointment.js';
+import { checkRequired } from '../middleware/plugins.js';
+import { checkDoctor } from '../controllers/doctors.js';
 import { checkToken, checkRole } from '../middleware/authentication.js';
 import { call } from '../middleware/handleError.js';
 const router = express.Router();
@@ -14,7 +16,7 @@ router.get('/doctors', call(checkToken), call(checkRole, "admin"), call(getDocto
 router.get('/doctors/:id', call(checkToken), call(checkRole, "admin"), call(getDoctorAppointments));
 router.get('/patients', call(checkToken), call(checkRole, "admin"), call(getPatientsAppointments));
 router.get('/patients/:name', call(checkToken), call(checkRole, "admin"), call(getPatientAppointments));
-router.post('/:id', call(checkToken), call(checkRole, ["user","unsystem"]), call(createAppointment));
+router.post('/:id', call(checkToken), call(checkRole, ["user","unsystem"]), call(checkRequired, ['name', 'phone', 'age', 'sex', 'app_date']), call(checkDoctor), call(createAppointment));
 router.delete('/:id', call(checkToken), call(checkRole, "all"), call(checkAppointment), call(deleteAppointment));
 
 export default router;

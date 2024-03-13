@@ -1,5 +1,6 @@
 import express from 'express';
 import {getReports, getUsersReports, getUserReports, getDoctorsReports, getDoctorReports, getPatientsReports, getPatientReports, createReport, checkReport} from '../controllers/report.js';
+import { checkRequired } from '../middleware/plugins.js';
 import { checkToken, checkRole } from '../middleware/authentication.js';
 import { call } from '../middleware/handleError.js';
 const router = express.Router();
@@ -14,6 +15,6 @@ router.get('/doctors', call(checkToken), call(checkRole, "admin"), call(getDocto
 router.get('/doctors/:id', call(checkToken), call(checkRole, "admin"), call(getDoctorReports));
 router.get('/patients', call(checkToken), call(checkRole, "admin"), call(getPatientsReports));
 router.get('/patients/:name', call(checkToken), call(checkRole, "admin"), call(getPatientReports));
-router.post('/:id/:appId', call(checkToken), call(checkRole, ["doctor", "unsystem"]), call(checkReport), call(createReport));
+router.post('/:id/:appId', call(checkToken), call(checkRole, ["doctor", "unsystem"]), call(checkRequired, ['diagnosis', 'medicines']), call(checkReport), call(createReport));
 
 export default router;

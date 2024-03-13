@@ -10,7 +10,8 @@ const envFile = path.join(__dirname, "../", '.env');
 config({ path: envFile});
 
 const _config = {
-    port: process.env.HTTP_SERVER_PORT || 8080,
+    port: process.env.HTTP_SERVER_PORT || 3000,
+    socketPort: process.env.SERVER_SOCKET_PORT || 4000,
     host: process.env.HTTP_SERVER_HOST || 'localhost',
     db: {
         host: process.env.DB_HOST || 'localhost',

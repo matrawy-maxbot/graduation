@@ -1,4 +1,4 @@
-import { sendError, handleError } from '../middleware/error.js';
+import { handleError } from '../middleware/error.js';
 
 const call = (callback, ...args) => {
     return async (req, res, next) => {

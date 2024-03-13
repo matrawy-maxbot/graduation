@@ -1,102 +1,233 @@
 import { Database } from './database.js';
+import { checkObj } from './tableSettings.js';
+import env from '../config/index.js';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import { fileTypeFromBuffer } from 'file-type';
 
-const dbClient = new Database('localhost', 'root', '', 'graduation_project');
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the directory name from the file path
+
+const dbClient = new Database('localhost', 'root', '', env.db.database);
 
 const DBselect = async (table, columns, condition, add_query) => {
-    try {
+    return new Promise(async (resolve, reject) => {
+        try {
 
-        // Example usage:
-        /*
-        table = 'your_table';
-        columns = ['column1', 'column2'];
-        condition = { id: 1 };
-        add_query = 'ORDER BY column1 DESC';
-        */
+            // Example usage:
+            /*
+            table = 'your_table';
+            columns = ['column1', 'column2'];
+            condition = { id: 1 };
+            add_query = 'ORDER BY column1 DESC';
+            */
 
-        const result = await dbClient.select(table, columns, condition, add_query);
-        return result;
-    } catch (error) {
-        console.error('Error selecting:', error);
-    }
+            const result = await dbClient.select(table, columns, condition, add_query);
+            resolve(result);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 const DBinsert = async (table, data, add_query) => {
-    try {
+    return new Promise(async (resolve, reject) => {
+        try {
 
-        // Example usage:
-        /*
-        table = 'your_table';
-        data = {
-            column1: 'value1',
-            column2: 'value2',
-            // Add more columns and values as needed
-        };
-        add_query = 'ON DUPLICATE KEY UPDATE column1 = VALUES(column1)'; // Optional additional query
-        */
+            // Example usage:
+            /*
+            table = 'your_table';
+            data = {
+                column1: 'value1',
+                column2: 'value2',
+                // Add more columns and values as needed
+            };
+            add_query = 'ON DUPLICATE KEY UPDATE column1 = VALUES(column1)'; // Optional additional query
+            */
 
-        await dbClient.insert(table, data, add_query);
-        return true;
-    } catch (error) {
-        console.error('Error selecting:', error);
-    }
+            let check = await checkBodyDB(table, data).catch(err => { return err; });
+            if(check.toString().includes("Types mismatch")) reject(check);
+
+            checkObj(table, data);
+
+            await dbClient.insert(table, data, add_query);
+            resolve(true);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 const DBupdate = async (table, data, condition, conditionMulti = "AND", add_query) => {
-    try {
+    return new Promise(async (resolve, reject) => {
+        try {
 
-        // Example usage:
-        /*
-        table = 'your_table';
-        data = {
-            column1: 'new_value',
-            // Add more columns and values as needed
-        };
-        condition = {
-            id: 1, // Specify the condition for the WHERE clause
-        };
-        add_query = 'LIMIT 1'; // Optional additional query
-        */
+            // Example usage:
+            /*
+            table = 'your_table';
+            data = {
+                column1: 'new_value',
+                // Add more columns and values as needed
+            };
+            condition = {
+                id: 1, // Specify the condition for the WHERE clause
+            };
+            add_query = 'LIMIT 1'; // Optional additional query
+            */
 
-        await dbClient.update(table, data, condition, conditionMulti, add_query);
-        return true;
-    } catch (error) {
-        console.error('Error selecting:', error);
-    }
+            let check = await checkBodyDB(table, data).catch(err => { return err; });
+            if(check.toString().includes("Types mismatch")) reject(check);
+
+            checkObj(table, data);
+
+            await dbClient.update(table, data, condition, conditionMulti, add_query);
+            resolve(true);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 const DBdelete = async (table, condition, add_query) => {
-    try {
+    return new Promise(async (resolve, reject) => {
+        try {
 
-        // Example usage:
-        /*
-        table = 'your_table';
-        condition = {
-            id: 1, // Specify the condition for the WHERE clause
-        };
-        add_query = 'LIMIT 1';
-        */
+            // Example usage:
+            /*
+            table = 'your_table';
+            condition = {
+                id: 1, // Specify the condition for the WHERE clause
+            };
+            add_query = 'LIMIT 1';
+            */
 
-        await dbClient.delete(table, condition, add_query);
-        return true;
-    } catch (error) {
-        console.error('Error selecting:', error);
-    }
+            await dbClient.delete(table, condition, add_query);
+            resolve(true);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 const DBquery = async (sql, values) => {
-    try {
+    return new Promise(async (resolve, reject) => {
+        try {
 
-        // Example usage:
-        /*
-        sql = 'SELECT * FROM your_table WHERE id = ?';
-        values = [1];
-        */
+            // Example usage:
+            /*
+            sql = 'SELECT * FROM your_table WHERE id = ?';
+            values = [1];
+            */
 
-        const q = await dbClient.query(sql, values);
-        return q;
-    } catch (error) {
-        console.error('Error selecting:', error);
+            const q = await dbClient.query(sql, values);
+            resolve(q);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+function sqlToJsType(sqlType) {
+    switch (sqlType.toUpperCase()) {
+        case 'CHAR':
+        case 'VARCHAR':
+        case 'TINYTEXT':
+        case 'MEDIUMTEXT':
+        case 'TEXT':
+        case 'LONGTEXT':
+            return 'string';
+
+        case 'INT':
+        case 'SMALLINT':
+        case 'BIGINT':
+        case 'DECIMAL':
+        case 'NUMERIC':
+        case 'FLOAT':
+        case 'REAL':
+        case 'DOUBLE':
+            return 'number';
+
+        case 'DATE':
+        case 'TIME':
+        case 'DATETIME':
+        case 'TIMESTAMP':
+            return 'string';
+
+        case 'BOOLEAN':
+            return 'boolean';
+
+        case 'JSON':
+            return 'object';
+
+        default:
+            return 'undefined';
     }
+}
+
+const DBObjectValues = async (table, object) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            let objectTypes = Object.keys(object).reduce((acc, cur) => {
+                acc[cur] = (typeof object[cur]).toLowerCase();
+                return acc;
+            }, {});
+        
+            let dbQuery = `SELECT COLUMN_NAME as name, DATA_TYPE as type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '${table}'`;
+            let tableTypes = await dbClient.query(dbQuery);
+            tableTypes = tableTypes.reduce((acc, cur) => {
+                acc[cur.name] = (sqlToJsType(cur.type)).toLowerCase();
+                return acc;
+            }, {});
+        
+            resolve({ obj: objectTypes, table:tableTypes });
+
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+const checkValues = async (table, object) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let values = await DBObjectValues(table, object);
+            let objKeys = Object.keys(values.obj);
+            let tableKeys = Object.keys(values.table);
+            values.table = tableKeys.reduce((acc, cur) => {
+                if(objKeys.includes(cur)) acc[cur] = values.table[cur];
+                return acc;
+            }, {});
+            values.obj = objKeys.reduce((acc, cur) => {
+                if(tableKeys.includes(cur)) acc[cur] = values.obj[cur];
+                return acc;
+            }, {});
+            let newobjKeys = Object.keys(values.obj);
+            let message = "Types mismatch :";
+            newobjKeys.forEach(key => {
+                if(key == 'file' || key == 'avatar') return;
+                if(values.obj[key] != values.table[key]) {
+                    message += `\nfor column ${key}. Expected ${values.table[key]}, got ${values.obj[key]}`;
+                }
+            });
+            if(message != "Types mismatch :") reject(message);
+            resolve(true);
+        } catch (error) {
+            reject(error);
+        }
+    });
+
+}
+
+const checkBodyDB = async (table, object) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let check = await checkValues(table, object);
+            if(check) resolve(true);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 const DBinit = async () => {
@@ -108,7 +239,7 @@ const DBinit = async () => {
             \`id\` varchar(17) NOT NULL,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL,
-            \`pass\` varchar(50) NOT NULL,
+            \`pass\` varchar(100) NOT NULL,
             \`avatar\` varchar(50) DEFAULT NULL,
             \`created_at\` timestamp NOT NULL DEFAULT current_timestamp()
         );
@@ -130,7 +261,7 @@ const DBinit = async () => {
             \`phone\` varchar(20) NOT NULL,
             \`age\` int(2) NOT NULL,
             \`sex\` int(1) NOT NULL DEFAULT 0 COMMENT \'0 for Male, 1 for Female\',
-            \`city\` varchar(30) NOT NULL,
+            \`city\` varchar(30) DEFAULT NULL,
             \`description\` mediumtext DEFAULT NULL,
             \`photos\` varchar(1000) DEFAULT NULL,
             \`owner_id\` varchar(17) NOT NULL,
@@ -175,7 +306,7 @@ const DBinit = async () => {
             \`id\` varchar(17) NOT NULL,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL,
-            \`pass\` varchar(50) NOT NULL,
+            \`pass\` varchar(100) NOT NULL,
             \`avatar\` varchar(50) DEFAULT NULL,
             \`speciality\` int(2) NOT NULL,
             \`expertment\` varchar(20) NOT NULL,
@@ -283,7 +414,7 @@ const DBinit = async () => {
             \`id\` varchar(17) NOT NULL,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL,
-            \`pass\` varchar(50) NOT NULL,
+            \`pass\` varchar(100) NOT NULL,
             \`avatar\` varchar(50) DEFAULT NULL,
             \`created_at\` timestamp NOT NULL DEFAULT current_timestamp()
         );
@@ -310,4 +441,70 @@ const DBinit = async () => {
     }
 }
 
-export { DBquery, DBselect, DBinsert, DBupdate, DBdelete, DBinit};
+function getFileType(fileBuffer) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        fileBuffer = Buffer.from(fileBuffer);
+        console.log("fileBuffer: ", fileBuffer);
+        const fileInfo = fileTypeFromBuffer(fileBuffer);
+        if(!fileInfo) reject('Invalid file type');
+        resolve(fileInfo);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+const uploadFile = async (file, name, pth, type) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!file) {
+                reject('No file provided');
+            }
+
+            let fileName = name;
+            let fileType = "";
+
+            if(file.size > (10*1024*1024)) reject('File size exceeds 10MB.');
+
+            if(type == 'image') {
+                let fileOptions = await getFileType(file.data).catch(err => { reject(err); });
+                let fileExtensions = ["jpg", "jpeg", "png", "webp"];
+                if (!fileOptions || !fileOptions.ext) {
+                    reject('Invalid image file.');
+                    return;
+                }
+                console.log("done file type check.",   fileExtensions.includes(fileOptions.ext));
+                if(!fileExtensions.includes(fileOptions.ext)) {
+                    console.log("fileOptions.ext: ", fileOptions.ext);
+                    reject('You can only upload jpg, jpeg, webp or png files.');
+                    return;
+                }
+                console.log("done file extension check.");
+                fileType = "." + fileOptions.ext;
+                console.log("fileType: ", fileType);
+            }
+
+            else if(type == 'any') {
+                let fileOptions = await getFileType(file.data).catch(err => { reject(err); });
+                let fileExtensions = ["jpg", "jpeg", "png", "webp", "gif", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "zip", "rar", "7z", "tar", "gz", "mp3", "wav"];
+                if(!fileExtensions.includes(fileOptions.ext)) {
+                    reject('This file type is not supported.');
+                }
+                fileType = "." + fileOptions.ext;
+            }
+
+            let uploadPath = path.join(__dirname, "../" + pth, fileName + fileType);
+
+            file.mv(uploadPath, (error) => {
+                if (error) {
+                    reject(error);
+                } else resolve(fileName + fileType);
+            });
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+export { DBquery, DBselect, DBinsert, DBupdate, DBdelete, DBinit, checkBodyDB, uploadFile};
