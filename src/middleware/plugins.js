@@ -1,3 +1,4 @@
+import statusCodes from '../config/status.js';
 import { sendError } from './error.js';
 
 const objectWithoutKey = (object, key) => {
@@ -37,7 +38,7 @@ const checkRequired = async (req, res, next, keys = []) => {
     console.log("checking required keys: ", req.body, req.files);
     let rk = await requiredKeys(req.body, keys).catch((missedKeys) => {
         console.log("missed keys: ", missedKeys);
-        sendError({status: 400, response:res, message: `Missing required fields: ${missedKeys.join(', ')}`});
+        sendError({status: statusCodes.BAD_REQUEST, response:res, message: `Missing required fields: ${missedKeys.join(', ')}`});
     });
     if(!rk) return;
     next();

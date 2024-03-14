@@ -4,8 +4,8 @@ import departments from './departments.js';
 const checkMinMax = (min, max, val) => {
     try {
         if(typeof val == "string") val = val.length;
-        if(val < min) throw `Yon can not set number lower than ${min}`;
-        if(val > max) throw `Yon can not set number more than ${max}`;
+        if(val < min) throw `400#You can not set number lower than ${min}`;
+        if(val > max) throw `400#You can not set number more than ${max}`;
     } catch (error) {
         throw error;
     }
@@ -13,12 +13,12 @@ const checkMinMax = (min, max, val) => {
 
 const checkName = (min, max, val) => {
     try {
-        if(val.length < min) throw `Yon can not set lower than ${min} characters`;
-        if(val.length > max) throw `Yon can not set more than ${max} characters`;
+        if(val.length < min) throw `400#You can not set lower than ${min} characters`;
+        if(val.length > max) throw `400#You can not set more than ${max} characters`;
         const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_. ";
         let valArray = val.split("");
         valArray.forEach((a) => {
-            if(!alphabet.includes(a)) throw "You can not use any character except this 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.'";
+            if(!alphabet.includes(a)) throw "400#You can not use any character except this 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.'";
         });
     } catch (error) {
         throw error;
@@ -30,7 +30,7 @@ const checkPhone = (val) => {
         const numbers = "0123456789+";
         let valArray = val.split("");
         valArray.forEach((a) => {
-            if(!numbers.includes(a)) throw "This phone is not valid";
+            if(!numbers.includes(a)) throw "400#This phone is not valid";
         });
 
         val = val.replace("+00", "+");
@@ -44,7 +44,8 @@ const checkPhone = (val) => {
         if(!val.startsWith("+")) val = "+" + val;
 
         let phoneCheck = phone(val);
-        if(!phoneCheck.isValid) throw "This phone is not valid";
+        console.log("phoneCheck ::: ", phoneCheck);
+        if(!phoneCheck.isValid) throw "400#This phone is not valid";
 
     } catch (error) {
         throw error;
@@ -59,13 +60,13 @@ const checkExpertment = (val) => {
         let filterVal = val.replace(/\s+/g, "");
         filterVal = filterVal.replace(/[0-9]/g, "");
         filterVal = filterVal.replace(/[abcdefghijklmnopqrstuvwxyz]+/gi, "");
-        if(filterVal.length > 0) throw "You can not use any character except this 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'";
+        if(filterVal.length > 0) throw "400#You can not use any character except this 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'";
         filterVal = val.replace(/\s+/g, "");
         filterVal = filterVal.replace(/[0-9]+years/g, "").replace(/[0-9]+year/g, "");
         filterVal = filterVal.replace(/[0-9]+months/g, "").replace(/[0-9]+month/g, "");
         filterVal = filterVal.replace(/[0-9]+days/g, "").replace(/[0-9]+day/g, "");
     
-        if(filterVal.length > 0) throw "please use this format '2 years'";
+        if(filterVal.length > 0) throw "400#please use this format '2 years'";
 
     } catch (error) {
         throw error;
@@ -77,7 +78,7 @@ const checkScheduleTime = (val) => {
 
         val = val.toString();
         val = val.replace(/[0-9][0-9]:[0-9][0-9]-[0-9][0-9]:[0-9][0-9]/g, "").replace(/[0-9][0-9]:[0-9][0-9] - [0-9][0-9]:[0-9][0-9]/g, "");
-        if(val.length > 0) throw "please use this format '08:00-15:00' or '08:00 - 15:00'";
+        if(val.length > 0) throw "400#please use this format '08:00-15:00' or '08:00 - 15:00'";
 
     } catch (error) {
         throw error;
@@ -89,7 +90,7 @@ const checkTime = (val) => {
 
         val = val.toString();
         val = val.replace(/[0-9][0-9]:[0-9][0-9]/g, "");
-        if(val.length > 0) throw "please use this format '08:00'";
+        if(val.length > 0) throw "400#please use this format '08:00'";
 
     } catch (error) {
         throw error;
@@ -98,7 +99,7 @@ const checkTime = (val) => {
 
 const checkDepartment = (val) => {
     try {
-        if(!departments[val] && typeof departments[val] !== "number") throw "This department is not valid";
+        if(!departments[val] && typeof departments[val] !== "number") throw "400#This department is not valid";
     }
     catch (error) {
         throw error;

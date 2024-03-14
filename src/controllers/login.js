@@ -1,3 +1,4 @@
+import statusCodes from '../config/status.js';
 import { sendError } from '../middleware/error.js';
 import { send } from '../middleware/send.js';
 import { generateToken } from '../middleware/authentication.js';
@@ -18,10 +19,10 @@ const login = async ( req, res, next) => {
             const JWTToken = generateToken({id: user.id});
             send(200, res, "success", {token:JWTToken});
         } else {
-            sendError({status: 401, response:res, message: "Password is incorrect"});
+            sendError({status: statusCodes.UNAUTHORIZED, response:res, message: "Password is incorrect"});
         }
     } else {
-        sendError({status: 404, response:res, message: "User not found"});
+        sendError({status: statusCodes.NOT_FOUND, response:res, message: "User not found"});
     }
 
 }
@@ -30,16 +31,16 @@ const checkLogin = async (value, key) => {
 
     try {
 
-        let user = await DBselect('admins', '*', {[key]: value}).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+        let user = await DBselect('admins', '*', {[key]: value}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
         if(!user) return false;
         let role = "admin";
         if(user.length == 0) {
-            user = await DBselect('doctors', '*', {[key]: value}).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+            user = await DBselect('doctors', '*', {[key]: value}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
             if(!user) return false;
             role = "doctor";
         }
         if(user.length == 0) {
-            user = await DBselect('users', '*', {[key]: value}).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+            user = await DBselect('users', '*', {[key]: value}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
             if(!user) return false;
             role = "user";
         }

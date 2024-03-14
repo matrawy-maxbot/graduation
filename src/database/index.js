@@ -50,6 +50,8 @@ const DBinsert = async (table, data, add_query) => {
 
             checkObj(table, data);
 
+            console.log("roooooooooof");
+
             await dbClient.insert(table, data, add_query);
             resolve(true);
         } catch (error) {

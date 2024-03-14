@@ -1,3 +1,5 @@
+import statusCodes from "../config/status.js";
+
 class CustomError extends Error {
     constructor(status, message, data = {}) {
         super(message);
@@ -24,7 +26,11 @@ const writeError = async (response, status, message) => {
 }
 
 const sendError = async (options) => {
-    const { status = 500, message = 'Internal Server Error', data = {}, log = true, response } = options;
+    let { status = statusCodes.INTERNAL_SERVER_ERROR, message = 'Internal Server Error', data = {}, log = true, response } = options;
+    if(message.split("#").length > 1) {
+        status = Number.parseInt(message.split("#")[0], 10);
+        message = message.split("#")[1];
+    }
     const error = new CustomError(status, message, data);
     if (log) {
         logError(error);
@@ -36,7 +42,7 @@ const sendError = async (options) => {
 };
 
 const handleError = async (options) => {
-    const { status = 500, message = 'Internal Server Error', data = {}, log = true, response } = options;
+    const { status = statusCodes.INTERNAL_SERVER_ERROR, message = 'Internal Server Error', data = {}, log = true, response } = options;
     const error = new CustomError(status, message, data);
     if (log) {
         logError(error);

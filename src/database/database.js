@@ -8,9 +8,13 @@ class DatabaseOperationQueue {
 
     enqueueOperation(operation) {
         return new Promise(async (resolve, reject) => {
-            this.operations.push({ operation, resolve, reject });
-            if (!this.isExecuting) {
-                this.executeNextOperation();
+            try {
+                this.operations.push({ operation, resolve, reject });
+                if (!this.isExecuting) {
+                    await this.executeNextOperation();
+                }
+            } catch (error) {
+                reject(error);
             }
         });
     }
@@ -21,6 +25,7 @@ class DatabaseOperationQueue {
             this.isExecuting = true;
 
             try {
+                console.log('Executing operation:', operation);
                 await operation.execute();
                 console.log('Operation executed successfully:', operation);
 
@@ -28,6 +33,8 @@ class DatabaseOperationQueue {
                 resolve();
             } catch (error) {
                 console.error('Error executing operation:', error);
+                this.isExecuting = false;
+                this.operations.shift();
                 reject(error);
             } finally {
                 this.isExecuting = false;
@@ -221,18 +228,19 @@ class Database {
             `;
             const values = [...dataValues, ...conditionValues];
 
-            console.log(" ay haga : ", table, values);
-
             await this.#operationQueue.enqueueOperation({
                 execute: async () => {
                     let res = await this.query(sql, values);
-                    if(res.affectedRows == 0) return console.log('Data already exist.');
+                    if(res.affectedRows == 0) {
+                        console.error('Data already exist.');
+                        throw "400#Data already exist.";
+                    }
                     console.log('Inserted!');
                 }
             });
         } catch (error) {
             console.error("Error inserting user:", error);
-            this.close(true);
+            await this.close(true);
             throw error;
         }
     }
@@ -282,23 +290,23 @@ class Database {
 
     close(reconnect = false) {
         return new Promise((resolve, reject) => {
-            this.pool.end((err) => {
+            this.pool.getConnection((err, connection) => {
                 if (err) {
-                    console.error('Error closing the database pool:', err);
+                    console.error('Error getting a connection to close the database pool:', err);
                     reject(err);
-                } else {
-                    console.log('Database pool closed');
-                    if (reconnect) {
-                        this.pool = createPool({
-                            connectionLimit: 10,
-                            host: this.#host,
-                            user: this.#user,
-                            password: this.#password,
-                            database: this.#database,
-                        });
-                    }
-                    resolve();
+                    return;
                 }
+                connection.end();
+                if (reconnect) {
+                    this.pool = createPool({
+                        connectionLimit: 10,
+                        host: this.#host,
+                        user: this.#user,
+                        password: this.#password,
+                        database: this.#database,
+                    });
+                }
+                resolve();
             });
         });
     }

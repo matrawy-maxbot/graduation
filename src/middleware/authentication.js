@@ -1,3 +1,4 @@
+import statusCodes from '../config/status.js';
 import { sendError } from '../middleware/error.js';
 import jwt from 'jsonwebtoken';
 import env from '../config/index.js';
@@ -40,10 +41,10 @@ const checkToken = async ( req, res, next) => {
         next();
     } else {
         if(tkn.data === "Expired"){
-            res.status(401).send("Token Expired");
+            res.status(statusCodes.BAD_GATEWAY).send("Token Expired");
         } else {
             console.log("leeeeeeeeeeh");
-            res.status(401).send("Unauthorized");
+            res.status(statusCodes.UNAUTHORIZED).send("Unauthorized");
         }
     }
 }
@@ -53,22 +54,19 @@ const checkRole = async ( req, res, next, role) => {
     const tkn = verifyToken(authToken);
     if(tkn.status || authToken == env.systemToken) {
         if(!role) {
-            res.status(401).send("internal server");
+            res.status(statusCodes.INTERNAL_SERVER_ERROR).send("internal server");
             return false;
         }
         let user = await checkLogin(tkn.data.id, "id");
         if(user.length == 0) {
-            res.status(401).send("User not found");
+            res.status(statusCodes.NOT_FOUND).send("User not found");
             return false;
         }
         console.log("Role : ", role, "User : ", user)
         if(authToken == env.systemToken) {
             const url = req.originalUrl.split("/");
-            if(url.includes("me")) {
-                sendError({ status: 401, message: 'cannot access this route with system token', response:res });
-                return false;
-            } else if(role.includes("unsystem")) {
-                sendError({ status: 401, message: 'cannot access this route with system token', response:res });
+            if(url.includes("me") || role.includes("unsystem")) {
+                sendError({ status: statusCodes.FORBIDDEN, message: 'cannot access this route with system token', response:res });
                 return false;
             }
             next();
@@ -79,7 +77,7 @@ const checkRole = async ( req, res, next, role) => {
                 req.owner = user;
                 next();
             } else {
-                res.status(401).send("Unauthorized");
+                res.status(statusCodes.UNAUTHORIZED).send("Unauthorized");
             }
         } else if(typeof role == "string") {
             if(role == "all") {
@@ -90,16 +88,16 @@ const checkRole = async ( req, res, next, role) => {
                 req.owner = user;
                 next();
             } else {
-                res.status(401).send("Unauthorized");
+                res.status(statusCodes.UNAUTHORIZED).send("Unauthorized");
             }
         } else {
-            res.status(401).send("internal server");
+            res.status(statusCodes.INTERNAL_SERVER_ERROR).send("internal server");
         }
     } else {
         if(tkn.data === "Expired"){
-            res.status(401).send("Token Expired");
+            res.status(statusCodes.BAD_GATEWAY).send("Token Expired");
         } else {
-            res.status(401).send("Unauthorized");
+            res.status(statusCodes.UNAUTHORIZED).send("Unauthorized");
         }
     }
 }

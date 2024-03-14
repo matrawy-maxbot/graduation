@@ -1,3 +1,4 @@
+import statusCodes from '../config/status.js';
 import { sendError } from '../middleware/error.js';
 import { send } from '../middleware/send.js';
 import { generateId } from '../middleware/id.js';
@@ -11,7 +12,7 @@ const getNotifications = async ( req, res, next) => {
     if(param == "me") {
         req.params.id = req.owner.id;
     }
-    const notifications = await DBselect('notifications', '*', "source = '" + req.params.id + "' OR destination = '" + req.params.id + "'").catch(err => { sendError({status:400, response:res, message:err}); return false; });
+    const notifications = await DBselect('notifications', '*', "source = '" + req.params.id + "' OR destination = '" + req.params.id + "'").catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!notifications) return;
     send(200, res, "success", notifications);
 
@@ -21,7 +22,7 @@ const createNotification = async ( req, res, next) => {
 
     let checkID = await checkLogin(req.params.id, "id");
     if(!checkID) {
-        sendError({status:404, response:res, message:"User not found"});
+        sendError({status:statusCodes.NOT_FOUND, response:res, message:"User not found"});
         return false;
     }
     if(!req.owner) {
@@ -32,7 +33,7 @@ const createNotification = async ( req, res, next) => {
     req.body.source = req.owner.id;
     req.body.destination = req.params.id;
     console.log(req.body);
-    const notification = await DBinsert('notifications', req.body).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+    const notification = await DBinsert('notifications', req.body).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     sendEvent("createNotification", req.body);
     if(!notification) return;
     send(201, res, "success", notification);

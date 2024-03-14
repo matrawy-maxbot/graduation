@@ -1,12 +1,13 @@
 import { server as WebSocketServer } from 'websocket';
 import { requestFunction } from './init.js';
 import { createServer } from 'http';
+import statusCodes from '../config/status.js';
 
 const createSocket = (port) => {
 
     var server = createServer(function(request, response) {
         console.log((new Date()) + ' Received request for ' + request.url);
-        response.writeHead(404);
+        response.writeHead(statusCodes.OK);
         response.end();
     });
 

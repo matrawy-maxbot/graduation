@@ -1,3 +1,4 @@
+import statusCodes from '../config/status.js';
 import { sendError } from '../middleware/error.js';
 import { send } from '../middleware/send.js';
 import { generateId } from '../middleware/id.js';
@@ -9,12 +10,12 @@ const getAdmins = async ( req, res, next) => {
 
     if(req.query.specific) {
         let specifics = req.query.specific.split(',').join("','");
-        const admins = await DBselect('admins', '*', "id IN ('" + specifics + "')").catch(err => { sendError({status:400, response:res, message:err}); return false; });
+        const admins = await DBselect('admins', '*', "id IN ('" + specifics + "')").catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
         if(!admins) return;
         send(200, res, "success", admins, ['pass', 'password']);
         return;
     }
-    const admins = await DBselect('admins', '*').catch(err => { sendError({status:400, response:res, message:err}); return false; });
+    const admins = await DBselect('admins', '*').catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!admins) return;
     send(200, res, "success", admins, ['pass', 'password']);
 
@@ -27,7 +28,7 @@ const getAdmin = async ( req, res, next) => {
     if(param == "me") {
         req.params.id = req.owner.id;
     }
-    const admin = await DBselect('admins', '*', {id: req.params.id}).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+    const admin = await DBselect('admins', '*', {id: req.params.id}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!admin) return;
     send(200, res, "success", admin, ['pass', 'password']);
     
@@ -39,7 +40,7 @@ const createAdmin = async ( req, res, next) => {
     req.body.id = generateId();
     req.body.pass = req.body.password || req.body.pass;
     req.body.pass = await hash(req.body.pass);
-    const admin = await DBinsert('admins', req.body).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+    const admin = await DBinsert('admins', req.body).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!admin) return;
     send(201, res, "success", admin, ['pass', 'password']);
 
@@ -53,11 +54,11 @@ const updateAdmin = async ( req, res, next) => {
     }
     if(req.body.avatar?.length && req.body.avatar?.length > 0) req.body.avatar = req.body.avatar[0];
     if(req.body.avatar) {
-        let fileName = await uploadFile(req.body.avatar, "avatar"+req.params.id, "files/avatar", 'image').catch(err => { sendError({status:400, response:res, message:err}); return false; });
+        let fileName = await uploadFile(req.body.avatar, "avatar"+req.params.id, "files/avatar", 'image').catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
         req.body.avatar = fileName;
     }
     const body = objectWithoutKey(req.body, 'pass');
-    const admin = await DBupdate('admins', body, {id: req.params.id}).catch(err => { sendError({status:400, response:res, message:err}); return false; });
+    const admin = await DBupdate('admins', body, {id: req.params.id}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!admin) return;
     send(200, res, "success", admin, ['pass', 'password']);
     
