@@ -20,7 +20,7 @@ const getNotifications = async ( req, res, next) => {
 
 const createNotification = async ( req, res, next) => {
 
-    let checkID = await checkLogin(req.params.id, "id");
+    let checkID = await checkLogin(req.params.id, "id", res);
     if(!checkID) {
         sendError({status:statusCodes.NOT_FOUND, response:res, message:"User not found"});
         return false;

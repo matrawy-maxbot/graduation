@@ -9,7 +9,7 @@ const login = async ( req, res, next) => {
 
     let { phone, pass, password } = req.body;
     password = pass || password;
-    const user = await checkLogin(phone, "phone");
+    const user = await checkLogin(phone, "phone", res);
     console.log("User : ", user);
     if(user) {
         console.log("password : ", password, user.pass);
@@ -27,20 +27,20 @@ const login = async ( req, res, next) => {
 
 }
 
-const checkLogin = async (value, key) => {
+const checkLogin = async (value, key, res = undefined) => {
 
     try {
 
-        let user = await DBselect('admins', '*', {[key]: value}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+        let user = await DBselect('admins', '*', {[key]: value}).catch(err => {throw err});
         if(!user) return false;
         let role = "admin";
         if(user.length == 0) {
-            user = await DBselect('doctors', '*', {[key]: value}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+            user = await DBselect('doctors', '*', {[key]: value}).catch(err => {throw err});
             if(!user) return false;
             role = "doctor";
         }
         if(user.length == 0) {
-            user = await DBselect('users', '*', {[key]: value}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+            user = await DBselect('users', '*', {[key]: value}).catch(err => {throw err});
             if(!user) return false;
             role = "user";
         }
@@ -53,6 +53,7 @@ const checkLogin = async (value, key) => {
     } catch (error) {
 
         console.error(error);
+        if(res) sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:error});
         return false;
         
     }

@@ -1,5 +1,11 @@
 import statusCodes from '../config/status.js';
 import { sendError } from './error.js';
+import { openSync, writeFileSync, readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { join, dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = dirname(__filename); // get the directory name from the file path
 
 const objectWithoutKey = (object, key) => {
     const {[key]: deletedKey, ...otherKeys} = object;
@@ -44,8 +50,52 @@ const checkRequired = async (req, res, next, keys = []) => {
     next();
 }
 
+const checkEnvFile = (path, envObject) => { // anyKey is an key the will be checked if it exists in the .env file
+    try {
+        let envFile = readFile(path);
+        if(!envFile) {
+            createEnvFile(path, envObject);
+            return;
+        }
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+const createEnvFile = (path, env = {}) => {
+    try {
+        let envFile = '';
+        for(let key in env) {
+            envFile += `${key}=${env[key]}\n`;
+        }
+        createFile(path, envFile);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const createFile = (path, content) => {
+    try {
+        writeFileSync(path, content);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const readFile = (path) => {
+    try {
+        path = join(__dirname, path);
+        const openFile = openSync(path, 'r');
+        return readFileSync(openFile, 'utf8');
+    } catch (error) {
+        return false;
+    }
+}
+
 export {
     objectWithoutKey,
     requiredKeys,
-    checkRequired
+    checkRequired,
+    checkEnvFile
 };

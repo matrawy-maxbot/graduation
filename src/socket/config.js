@@ -35,7 +35,7 @@ const checkAuthorization = async (request) => {
         const tkn = verifyToken(authToken);
         if(tkn.status) {
             let user = await checkLogin(tkn.data.id, "id");
-            if(user.length == 0) {
+            if(!user || user.length == 0) {
                 sendError({status:statusCodes.NOT_FOUND, message:"User not found"}, request);
                 reject(false);
             }

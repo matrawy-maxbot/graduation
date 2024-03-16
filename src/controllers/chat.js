@@ -28,7 +28,7 @@ const getChat = async ( req, res, next) => {
 const createMessage = async ( req, res, next) => {
 
     //console.log(req.body);
-    let checkID = await checkLogin(req.params.id, "id");
+    let checkID = await checkLogin(req.params.id, "id", res);
     if(!checkID) {
         sendError({status:statusCodes.NOT_FOUND, response:res, message:"User not found"});
         return false;

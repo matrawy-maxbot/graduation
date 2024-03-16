@@ -6,13 +6,13 @@ import statusCodes from '../config/status.js';
 const createSocket = (port) => {
 
     var server = createServer(function(request, response) {
-        console.log((new Date()) + ' Received request for ' + request.url);
+        console.log("\n-------------------------------\n" + (new Date()) + ' Received request for ' + request.url + "\n-------------------------------\n");
         response.writeHead(statusCodes.OK);
         response.end();
     });
 
     server.listen(port, function() {
-        console.log((new Date()) + ' Server is listening on port ' + port);
+        console.log('# Server is listening on port ' + port);
     });
 
     const wsServer = new WebSocketServer({

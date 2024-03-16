@@ -1,4 +1,5 @@
 import { createPool } from 'mysql';
+import env from '../config/index.js';
 
 class DatabaseOperationQueue {
     constructor() {
@@ -56,7 +57,7 @@ class Database {
     #operationQueue;
     pool;
 
-    constructor(host, user, password, database) {
+    constructor(host, user, password, database = env.db.database) {
 
         this.#host = host;
         this.#user = user;
@@ -68,11 +69,11 @@ class Database {
             host: this.#host,
             user: this.#user,
             password: this.#password,
-            database: this.#database,
+            //database: this.#database,
         });
 
         this.pool.on('connection', (connection) => {
-            console.log('New database connection established');
+            console.log('New database connection established!');
         });
 
         this.pool.on('acquire', (connection) => {
@@ -100,7 +101,6 @@ class Database {
                 if(multiple) {
                     let queries = sql.split(';');
                     queries.pop();
-                    console.log(queries);
                     for (let i = 0; i < queries.length; i++) {
                         connection.query(queries[i], (error, results, fields) => {
                             if (error) {
@@ -114,7 +114,6 @@ class Database {
                     }
                 } else {
                     connection.query(sql, values, (error, results, fields) => {
-                        console.log('Query executed:', sql, values);
                         connection.release();
                         if (error) {
                             reject(error);
@@ -150,7 +149,7 @@ class Database {
             }
             const dataValues = Object.values(data);
     
-            const sql = `SELECT COUNT(*) as count FROM ${table} WHERE ${dataKeys}`;
+            const sql = `SELECT COUNT(*) as count FROM ${this.#database}.${table} WHERE ${dataKeys}`;
     
             const result = await this.query(sql, dataValues);
             return result[0].count > 0;
@@ -162,7 +161,7 @@ class Database {
     }
 
     async getUniqueFields(table) {
-        const sql = `SHOW INDEXES FROM ${table}`;
+        const sql = `SHOW INDEXES FROM ${this.#database}.${table}`;
     
         try {
             let result = await this.query(sql);
@@ -191,7 +190,7 @@ class Database {
                 break;
         }
         add_query = add_query ? this.pool.escape(add_query) : "";
-        const sql = `SELECT ${columnList} FROM ${table} ${conditionString}${add_query}`;
+        const sql = `SELECT ${columnList} FROM ${this.#database}.${table} ${conditionString}${add_query}`;
       
         try {
             var result;
@@ -219,10 +218,10 @@ class Database {
             const conditionValues = uniqueFields.map(uf => data[uf]);
     
             const sql = `
-                INSERT INTO ${table} (${dataKeys})
+                INSERT INTO ${this.#database}.${table} (${dataKeys})
                 SELECT ${datavaluesQM} FROM dual
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM ${table}
+                    SELECT 1 FROM ${this.#database}.${table}
                     WHERE ${whereCondition}
                 ) ${add_query}
             `;
@@ -252,10 +251,10 @@ class Database {
         if(conditionKeys.length > 1) {
             let escap = await this.escape(condition);
             escap = escap.replace(/, /g, " " + conditionMulti + " ");
-            sql = `UPDATE ${table} SET ? WHERE ${escap} ${add_query}`;
+            sql = `UPDATE ${this.#database}.${table} SET ? WHERE ${escap} ${add_query}`;
             condition = "";
         } else {
-            sql = `UPDATE ${table} SET ? WHERE ? ${add_query}`;
+            sql = `UPDATE ${this.#database}.${table} SET ? WHERE ? ${add_query}`;
         }
 
         try {
@@ -273,7 +272,7 @@ class Database {
 
     async delete(table, condition, add_query = "") {
         add_query = add_query ? this.pool.escape(add_query) : "";
-        const sql = `DELETE FROM ${table} WHERE ? ${add_query}`;
+        const sql = `DELETE FROM ${this.#database}.${table} WHERE ? ${add_query}`;
 
         try {
             await this.#operationQueue.enqueueOperation({
@@ -303,7 +302,7 @@ class Database {
                         host: this.#host,
                         user: this.#user,
                         password: this.#password,
-                        database: this.#database,
+                        //database: this.#database,
                     });
                 }
                 resolve();

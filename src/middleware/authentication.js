@@ -33,10 +33,12 @@ const checkToken = async ( req, res, next) => {
     const authToken = req.headers.authorization.replace(/Bearer/i, "").replace(/\s+/g, "");
     console.log("Auth Token : ", authToken, env.systemToken);
     if(authToken == env.systemToken){
+        console.log("Token adminSystem ");
         next();
         return false;
     }
     const tkn = verifyToken(authToken);
+    console.log("Token : ", tkn);
     if(tkn.status) {
         next();
     } else {
@@ -57,7 +59,7 @@ const checkRole = async ( req, res, next, role) => {
             res.status(statusCodes.INTERNAL_SERVER_ERROR).send("internal server");
             return false;
         }
-        let user = await checkLogin(tkn.data.id, "id");
+        let user = await checkLogin(tkn.data.id, "id", res);
         if(user.length == 0) {
             res.status(statusCodes.NOT_FOUND).send("User not found");
             return false;
