@@ -14,6 +14,7 @@ import scheduleRouter from './src/routes/schedule.js';
 import {DBinit} from './src/database/index.js';
 import { createSocket } from './src/socket/index.js';
 import { checkEnvFile } from './src/middleware/plugins.js';
+import { randomBytes } from 'crypto';
 
 // initialize database at the start of the server
 // If you want to insert some data to the database at the begining, please set it like that :  DBinit(true);
@@ -25,8 +26,8 @@ const envContent = {
     "HTTP_SERVER_HOST":"localhost",
     "HTTP_SERVER_PORT":8080,
     "SERVER_SOCKET_PORT":4000,
-    "ADMIN_TOKEN":"BchhWoRKBNsjNiCLsB7ARUfA6qjbZu7bdbbczI1j7JmJ9coIBavC80Vy2xzTAOOCJslJnCMXRHWsNDjoWUA",
-    "PRIVATE_KEY":"ieorauyvpoieamjyvoeradlkwekdsfvcblojerglkfdxjy3gh4hgfh54htutk6",
+    "ADMIN_TOKEN":randomBytes(48).toString('hex'),
+    "PRIVATE_KEY":randomBytes(32).toString('hex'),
     "DB_HOST":"localhost",
     "DB_PORT":3306,
     "DB_USER":"root",
