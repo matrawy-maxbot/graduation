@@ -15,6 +15,7 @@ import {DBinit} from './src/database/index.js';
 import { createSocket } from './src/socket/index.js';
 import { checkEnvFile } from './src/middleware/plugins.js';
 import { randomBytes } from 'crypto';
+import cors from 'cors';
 
 // initialize database at the start of the server
 // If you want to insert some data to the database at the begining, please set it like that :  DBinit(true);
@@ -37,6 +38,8 @@ const envContent = {
 checkEnvFile("./src/.env", envContent);
 
 const app = express();
+
+app.use(cors());
 
 app.use(loggerMiddleware);
 

@@ -1,0 +1,20 @@
+[ 2024-3-16 05:36:47 PM ] : 400 # CustomError: Missing required fields: name
+[ 2024-3-16 05:41:18 PM ] : TypeError: message.split is not a function
+[ 2024-3-16 05:41:57 PM ] : TypeError: message.split is not a function
+[ 2024-3-16 05:43:37 PM ] : TypeError: message.split is not a function
+[ 2024-3-16 05:44:08 PM ] : TypeError: message.split is not a function
+[ 2024-3-16 05:44:53 PM ] : TypeError: message.split is not a function
+[ 2024-3-16 05:45:34 PM ] : TypeError: message.split is not a function
+[ 2024-3-16 05:46:01 PM ] : 500 # CustomError: Error: ER_NO_DB_ERROR: No database selected
+[ 2024-3-16 05:46:41 PM ] : 500 # CustomError: Error: ER_NO_DB_ERROR: No database selected
+[ 2024-3-16 05:54:15 PM ] : 500 # CustomError: Error: ER_NO_DB_ERROR: No database selected
+[ 2024-3-16 05:55:55 PM ] : 500 # CustomError: err is not defined
+[ 2024-3-16 05:56:33 PM ] : 500 # CustomError: Error: ER_NO_DB_ERROR: No database selected
+[ 2024-3-16 05:56:33 PM ] : 500 # CustomError: Error: ER_NO_DB_ERROR: No database selected
+[ 2024-3-16 06:03:12 PM ] : 500 # CustomError: Error: ER_NO_DB_ERROR: No database selected
+[ 2024-3-16 06:03:12 PM ] : 500 # CustomError: Error: ER_NO_DB_ERROR: No database selected
+[ 2024-3-16 06:04:02 PM ] : 500 # CustomError: Error: ER_NO_DB_ERROR: No database selected
+[ 2024-3-16 06:04:03 PM ] : 500 # CustomError: Error: ER_NO_DB_ERROR: No database selected
+[ 2024-3-16 06:45:25 PM ] : 400 # CustomError: Data already exist.
+[ 2024-3-16 06:48:18 PM ] : 400 # CustomError: Missing required fields: name||avatar
+[ 2024-3-16 06:50:16 PM ] : 401 # CustomError: Password is incorrect
