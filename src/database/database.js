@@ -55,21 +55,26 @@ class Database {
     #password;
     #database;
     #operationQueue;
+    #port;
     pool;
 
-    constructor(host, user, password, database = env.db.database) {
+    constructor(host, user, password, port, database = env.db.database) {
 
         this.#host = host;
         this.#user = user;
         this.#password = password;
         this.#database = database;
+        this.#port = port;
 
+        console.log('Host:', this.#host, ' , Port:', this.#port, ' , User:', this.#user, ' , Password:', this.#password, ' , Database:', this.#database);
+        
         this.pool = createPool({
             connectionLimit: 10,
             host: this.#host,
             user: this.#user,
             password: this.#password,
-            //database: this.#database,
+            database: this.#database,
+            port: this.#port
         });
 
         this.pool.on('connection', (connection) => {
@@ -149,7 +154,7 @@ class Database {
             }
             const dataValues = Object.values(data);
     
-            const sql = `SELECT COUNT(*) as count FROM ${this.#database}.${table} WHERE ${dataKeys}`;
+            const sql = `SELECT COUNT(*) as count FROM ${table} WHERE ${dataKeys}`;
     
             const result = await this.query(sql, dataValues);
             return result[0].count > 0;
@@ -161,7 +166,7 @@ class Database {
     }
 
     async getUniqueFields(table) {
-        const sql = `SHOW INDEXES FROM ${this.#database}.${table}`;
+        const sql = `SHOW INDEXES FROM ${table}`;
     
         try {
             let result = await this.query(sql);
@@ -190,7 +195,7 @@ class Database {
                 break;
         }
         add_query = add_query ? this.pool.escape(add_query) : "";
-        const sql = `SELECT ${columnList} FROM ${this.#database}.${table} ${conditionString}${add_query}`;
+        const sql = `SELECT ${columnList} FROM ${table} ${conditionString}${add_query}`;
       
         try {
             var result;
@@ -218,10 +223,10 @@ class Database {
             const conditionValues = uniqueFields.map(uf => data[uf]);
     
             const sql = `
-                INSERT INTO ${this.#database}.${table} (${dataKeys})
+                INSERT INTO ${table} (${dataKeys})
                 SELECT ${datavaluesQM} FROM dual
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM ${this.#database}.${table}
+                    SELECT 1 FROM ${table}
                     WHERE ${whereCondition}
                 ) ${add_query}
             `;
@@ -251,10 +256,10 @@ class Database {
         if(conditionKeys.length > 1) {
             let escap = await this.escape(condition);
             escap = escap.replace(/, /g, " " + conditionMulti + " ");
-            sql = `UPDATE ${this.#database}.${table} SET ? WHERE ${escap} ${add_query}`;
+            sql = `UPDATE ${table} SET ? WHERE ${escap} ${add_query}`;
             condition = "";
         } else {
-            sql = `UPDATE ${this.#database}.${table} SET ? WHERE ? ${add_query}`;
+            sql = `UPDATE ${table} SET ? WHERE ? ${add_query}`;
         }
 
         try {
@@ -272,7 +277,7 @@ class Database {
 
     async delete(table, condition, add_query = "") {
         add_query = add_query ? this.pool.escape(add_query) : "";
-        const sql = `DELETE FROM ${this.#database}.${table} WHERE ? ${add_query}`;
+        const sql = `DELETE FROM ${table} WHERE ? ${add_query}`;
 
         try {
             await this.#operationQueue.enqueueOperation({
@@ -302,7 +307,8 @@ class Database {
                         host: this.#host,
                         user: this.#user,
                         password: this.#password,
-                        //database: this.#database,
+                        database: this.#database,
+                        port: this.#port
                     });
                 }
                 resolve();

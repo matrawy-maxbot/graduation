@@ -8,7 +8,7 @@ import { fileTypeFromBuffer } from 'file-type';
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the directory name from the file path
 
-const dbClient = new Database('localhost', 'root', '');
+const dbClient = new Database(env.db.host, env.db.user, env.db.password, env.db.port, env.db.database);
 
 const DBselect = async (table, columns, condition, add_query) => {
     return new Promise(async (resolve, reject) => {
@@ -235,13 +235,9 @@ const checkBodyDB = async (table, object) => {
 const DBinit = async (insertTestValues = false) => {
     try {
 
-        const databaseName = env.db.database;
         let sql = `
 
-        CREATE DATABASE IF NOT EXISTS \`${databaseName}\`;
-
-
-        CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`admins\` (
+        CREATE TABLE IF NOT EXISTS \`admins\` (
             \`id\` varchar(17) NOT NULL PRIMARY KEY,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL UNIQUE,
@@ -251,7 +247,7 @@ const DBinit = async (insertTestValues = false) => {
         );
         
 
-        CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`appointments\` (
+        CREATE TABLE IF NOT EXISTS \`appointments\` (
             \`id\` varchar(17) NOT NULL PRIMARY KEY,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL,
@@ -263,12 +259,12 @@ const DBinit = async (insertTestValues = false) => {
             \`owner_id\` varchar(17) NOT NULL,
             \`doctor_id\` varchar(17) NOT NULL,
             \`department\` int(2) NOT NULL,
-            \`app_date\` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+            \`app_date\` varchar(10) NOT NULL,
             \`created_at\` timestamp NOT NULL DEFAULT current_timestamp()
         );
 
         
-        CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`chat\` (
+        CREATE TABLE IF NOT EXISTS \`chat\` (
             \`id\` varchar(17) NOT NULL PRIMARY KEY,
             \`source\` varchar(17) NOT NULL,
             \`destination\` varchar(17) NOT NULL,
@@ -278,7 +274,7 @@ const DBinit = async (insertTestValues = false) => {
         );   
 
 
-        CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`doctors\` (
+        CREATE TABLE IF NOT EXISTS \`doctors\` (
             \`id\` varchar(17) NOT NULL PRIMARY KEY,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL UNIQUE,
@@ -290,7 +286,7 @@ const DBinit = async (insertTestValues = false) => {
         );   
         
 
-        CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`notifications\` (
+        CREATE TABLE IF NOT EXISTS \`notifications\` (
             \`id\` varchar(17) NOT NULL PRIMARY KEY,
             \`source\` varchar(17) NOT NULL,
             \`destination\` varchar(17) NOT NULL,
@@ -299,7 +295,7 @@ const DBinit = async (insertTestValues = false) => {
         );     
 
 
-        CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`ratings\` (
+        CREATE TABLE IF NOT EXISTS \`ratings\` (
             \`id\` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
             \`doctor_id\` varchar(17) NOT NULL,
             \`user_id\` varchar(17) NOT NULL,
@@ -308,7 +304,7 @@ const DBinit = async (insertTestValues = false) => {
         );
 
 
-        CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`report\` (
+        CREATE TABLE IF NOT EXISTS \`report\` (
             \`id\` varchar(17) NOT NULL PRIMARY KEY,
             \`doctor_id\` varchar(17) NOT NULL,
             \`appointment_id\` varchar(17) NOT NULL,
@@ -322,7 +318,7 @@ const DBinit = async (insertTestValues = false) => {
         );    
         
 
-        CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`schedules\` (
+        CREATE TABLE IF NOT EXISTS \`schedules\` (
             \`doctor_id\` varchar(17) NOT NULL PRIMARY KEY,
             \`sunday\` varchar(12) DEFAULT NULL,
             \`monday\` varchar(12) DEFAULT NULL,
@@ -334,7 +330,7 @@ const DBinit = async (insertTestValues = false) => {
         );    
         
 
-        CREATE TABLE IF NOT EXISTS \`${databaseName}\`.\`users\` (
+        CREATE TABLE IF NOT EXISTS \`users\` (
             \`id\` varchar(17) NOT NULL PRIMARY KEY,
             \`name\` varchar(55) NOT NULL,
             \`phone\` varchar(20) NOT NULL UNIQUE,
@@ -347,7 +343,7 @@ const DBinit = async (insertTestValues = false) => {
 
         let insertSQL = `
         
-        INSERT INTO \`${databaseName}\`.\`admins\` (id, name, phone, pass, avatar) 
+        INSERT INTO \`admins\` (id, name, phone, pass, avatar) 
         VALUES 
         (12345, 'Alice Johnson', '+1234567890', 'alice_pass123', 'https://example.com/alice_avatar.jpg'),
         (54321, 'Bob Smith', '+1987654321', 'bob_password!', 'https://example.com/bob_avatar.jpg'),
@@ -355,7 +351,7 @@ const DBinit = async (insertTestValues = false) => {
         (24680, 'Michael Brown', '+5555555555', 'mike_pass_123', 'https://example.com/michael_avatar.jpg'),
         (13579, 'Sophia Wilson', '+9876543210', 'sophiaPass!', 'https://example.com/sophia_avatar.jpg');
 
-        INSERT INTO \`${databaseName}\`.\`appointments\` (id, name, phone, age, sex, city, description, photos, owner_id, doctor_id, department, app_date) 
+        INSERT INTO \`appointments\` (id, name, phone, age, sex, city, description, photos, owner_id, doctor_id, department, app_date) 
         VALUES 
         (1001, 'John Doe', '+1234567890', 35, 0, 'New York', 'Regular check-up', 'https://example.com/photo1.jpg,https://example.com/photo2.jpg', 24601, 13579, 0, '2024-03-03'),
         (1002, 'Jane Smith', '+1987654321', 28, 1, 'Los Angeles', 'Allergic reactions', 'https://example.com/photo3.jpg', 13579, 98765, 1, '2024-03-04'),
@@ -363,7 +359,7 @@ const DBinit = async (insertTestValues = false) => {
         (1004, 'Emily Brown', '+5555555555', 20, 1, 'Houston', 'Dental consultation', 'https://example.com/photo5.jpg,https://example.com/photo6.jpg', 54321, 24680, 3, '2024-03-06'),
         (1005, 'David Wilson', '+9876543210', 50, 0, 'San Francisco', 'Vision problems', 'https://example.com/photo7.jpg', 12345, 12345, 4, '2024-03-07');
 
-        INSERT INTO \`${databaseName}\`.\`chat\` (id, source, destination, content, file) 
+        INSERT INTO \`chat\` (id, source, destination, content, file) 
         VALUES 
         (2001, 12345, 13579, 'Hi Elena, I would like to schedule an appointment for next week.', NULL),
         (2002, 54321, 24680, 'Dr. Wilson, could you please review my latest test results?', 'attachment1.pdf'),
@@ -371,7 +367,7 @@ const DBinit = async (insertTestValues = false) => {
         (2004, 13579, 54321, 'Bob, I need to reschedule our meeting to Friday afternoon.', NULL),
         (2005, 24680, 12345, 'Alice, could you provide me with more details about the upcoming event?', NULL);
 
-        INSERT INTO \`${databaseName}\`.\`doctors\` (id, name, phone, pass, avatar, speciality, expertment) 
+        INSERT INTO \`doctors\` (id, name, phone, pass, avatar, speciality, expertment) 
         VALUES 
         (13579, 'Elena Rodriguez', '+1122334455', 'elena_pass123', 'https://example.com/elena_avatar.jpg', 'Computer Science', 'Machine Learning'),
         (98765, 'Daniel Garcia', '+1234567890', 'daniel_password!', 'https://example.com/daniel_avatar.jpg', 'Electrical Engineering', 'Robotics'),
@@ -379,7 +375,7 @@ const DBinit = async (insertTestValues = false) => {
         (24680, 'James Wilson', '+5555555555', 'james_pass_123', 'https://example.com/james_avatar.jpg', 'Medicine', 'Clinical Trials'),
         (12345, 'Isabella Brown', '+9876543210', 'isabellaPass!', 'https://example.com/isabella_avatar.jpg', 'Physics', 'Quantum Mechanics');
 
-        INSERT INTO \`${databaseName}\`.\`notifications\` (id, source, destination, content) 
+        INSERT INTO \`notifications\` (id, source, destination, content) 
         VALUES 
         (3001, 12345, 13579, 'Hi Elena, I would like to schedule an appointment for next week.'),
         (3002, 54321, 24680, 'Dr. Wilson, could you please review my latest test results?'),
@@ -387,7 +383,7 @@ const DBinit = async (insertTestValues = false) => {
         (3004, 13579, 54321, 'Bob, I need to reschedule our meeting to Friday afternoon.'),
         (3005, 24680, 12345, 'Alice, could you provide me with more details about the upcoming event?');
 
-        INSERT INTO \`${databaseName}\`.\`ratings\` (id, doctor_id, user_id, rating) 
+        INSERT INTO \`ratings\` (id, doctor_id, user_id, rating) 
         VALUES 
         (4001, 13579, 12345, 4.5),
         (4002, 24680, 54321, 3.8),
@@ -395,7 +391,7 @@ const DBinit = async (insertTestValues = false) => {
         (4004, 54321, 13579, 4.0),
         (4005, 12345, 24680, 4.7);
 
-        INSERT INTO \`${databaseName}\`.\`report\` (id, doctor_id, appointment_id, user_id, diagnosis, reasons, advices, medicines, treatments) 
+        INSERT INTO \`report\` (id, doctor_id, appointment_id, user_id, diagnosis, reasons, advices, medicines, treatments) 
         VALUES 
         (5001, 13579, 1001, 24601, 'High blood pressure', 'Routine check-up', 'Increase physical activity, reduce sodium intake', 'Lisinopril, Hydrochlorothiazide', 'Regular exercise, dietary changes'),
         (5002, 98765, 1002, 13579, 'Allergic rhinitis', 'Seasonal allergies', 'Avoid allergens, nasal corticosteroids', 'Fluticasone nasal spray', 'Avoid allergens, medication as needed'),
@@ -403,7 +399,7 @@ const DBinit = async (insertTestValues = false) => {
         (5004, 24680, 1004, 54321, 'Cavity detected', 'Toothache, sensitivity', 'Dental filling, oral hygiene', 'Composite filling material', 'Dental filling procedure, oral hygiene instructions'),
         (5005, 12345, 1005, 12345, 'Myopia', 'Blurry vision, difficulty focusing', 'Corrective lenses, eye exercises', 'Prescription eyeglasses', 'Regular eye exams, use of prescribed eyewear');
     
-        INSERT INTO \`${databaseName}\`.\`schedules\` (doctor_id, sunday, monday, tuesday, wednesday, thursday, friday, saturday) 
+        INSERT INTO \`schedules\` (doctor_id, sunday, monday, tuesday, wednesday, thursday, friday, saturday) 
         VALUES 
         (13579, '08:00-12:00', '09:00-13:00', '08:30-12:30', '09:30-13:30', '08:00-12:00', '09:00-13:00', NULL),
         (24680, '10:00-14:00', NULL, '10:30-14:30', '09:00-13:00', '08:30-12:30', '09:00-13:00', '10:00-14:00'),
@@ -411,7 +407,7 @@ const DBinit = async (insertTestValues = false) => {
         (98765, '09:00-13:00', '08:00-12:00', '09:30-13:30', '08:30-12:30', '09:00-13:00', '08:00-12:00', '09:00-13:00'),
         (12345, NULL, '08:00-12:00', '09:00-13:00', '08:30-12:30', '09:00-13:00', '08:00-12:00', '09:00-13:00');
 
-        INSERT INTO \`${databaseName}\`.\`users\` (id, name, phone, pass, avatar) 
+        INSERT INTO \`users\` (id, name, phone, pass, avatar) 
         VALUES 
         (24601, 'Laura White', '+1122334455', 'laura_pass123', 'https://example.com/laura_avatar.jpg'),
         (13579, 'David Miller', '+1234567890', 'david_password!', 'https://example.com/david_avatar.jpg'),
@@ -421,7 +417,7 @@ const DBinit = async (insertTestValues = false) => {
 
         `;
 
-        await dbClient.query('CREATE DATABASE IF NOT EXISTS ' + databaseName);
+        //await dbClient.query('CREATE DATABASE IF NOT EXISTS ' + databaseName);
         sql = await dbClient.escape(sql.replace(/\n/g, "").replace(/\s+/g, " "));
         sql = sql.slice(1, -1).replace(/\\/g, "");
         await dbClient.query(sql, [], true);

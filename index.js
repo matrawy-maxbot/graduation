@@ -23,7 +23,7 @@ import cors from 'cors';
 DBinit(false);
 
 // check .env file that should be in the folder 'src' and contain the following:
-const envContent = {
+/*const envContent = {
     "HTTP_SERVER_HOST":"localhost",
     "HTTP_SERVER_PORT":8080,
     "SERVER_SOCKET_PORT":4000,
@@ -35,7 +35,7 @@ const envContent = {
     "DB_PASS":'',
     "DB_NAME":"graduation_project"
 };
-checkEnvFile("./src/.env", envContent);
+checkEnvFile("./src/.env", envContent);*/
 
 const app = express();
 
