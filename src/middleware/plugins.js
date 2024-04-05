@@ -80,7 +80,8 @@ const createEnvFile = (path, env = {}) => {
 const createFile = (path, content) => {
     try {
         writeFileSync(path, content);
-    } catch (error) {
+        console.log("File created successfully");
+        } catch (error) {
         throw error;
     }
 }

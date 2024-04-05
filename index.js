@@ -41,7 +41,7 @@ const envContent = {
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the directory name from the file path
 
-const envFile = path.join(__dirname, "src", '.env');
+const envFile = path.join(__dirname, '.env');
 
 checkEnvFile(envFile, envContent);
 
