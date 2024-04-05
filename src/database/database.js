@@ -2,6 +2,7 @@ import { createPool } from 'mysql';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import env from '../config/index.js';
+import fs from 'fs';
 
 class DatabaseOperationQueue {
     constructor() {
@@ -61,10 +62,22 @@ class Database {
     pool;
 
     constructor(host, user, password, port, database = env.db.database) {
-
+        
         const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
         const __dirname = path.dirname(__filename); // get the directory name from the file path
-        const envFile = path.join(__dirname, "/etc/secrets", '.env');
+        const envFile = path.join(__dirname, "../../etc/secrets", '.env');
+
+        fs.readdir(path.join(__dirname, "../../etc/secrets"), function (err, files) {
+            // handling error
+            if (err) {
+            return console.log('Unable to scan directory: ' + err);
+            } 
+            // listing all files using forEach
+            files.forEach(function (file) {
+            // Do whatever you want to do with the file
+            console.log(file); 
+            });
+        });
 
         console.log("process : ", process.env.HTTP_SERVER_PORT, "\n\n");
         console.log("filename : ", envFile, "\n\n");
