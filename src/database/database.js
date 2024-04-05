@@ -67,7 +67,9 @@ class Database {
         const __dirname = path.dirname(__filename); // get the directory name from the file path
         const envFile = path.join(__dirname, "../../etc/secrets", '.env');
 
-        fs.readdir(path.join(__dirname, "../../etc/secrets"), function (err, files) {
+        fs.readdir(path.join(__dirname, "../../"), function (err, files) {
+
+            console.log("reading files :");
             // handling error
             if (err) {
             return console.log('Unable to scan directory: ' + err);
@@ -75,11 +77,13 @@ class Database {
             // listing all files using forEach
             files.forEach(function (file) {
             // Do whatever you want to do with the file
-            console.log(file); 
+                console.log(file); 
+
             });
+            console.log("end reading files :");
         });
 
-        console.log("process : ", process.env.HTTP_SERVER_PORT, "\n\n");
+        console.log("process : ", process.env, "\n\n");
         console.log("filename : ", envFile, "\n\n");
         console.log("dirname : ", __dirname, "  |||  env file content : ", env, "\n\n");
 
