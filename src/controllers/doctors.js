@@ -10,6 +10,8 @@ import { getDoctorRatings, getDoctorsRatings } from './ratings.js';
 
 const getDoctors = async ( req, res, next) => {
 
+    console.log("doctors doctors doctors");
+
     let doctors;
     if(req.query.specific) {
         let specifics = req.query.specific.split(',').join("','");
