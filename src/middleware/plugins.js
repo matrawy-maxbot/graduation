@@ -52,9 +52,11 @@ const checkRequired = async (req, res, next, keys = []) => {
 
 const checkEnvFile = (path, envObject) => { // anyKey is an key the will be checked if it exists in the .env file
     try {
+        console.log("checkEnvFile: ", path, envObject)
         let envFile = readFile(path);
+        console.log("envFile: ", envFile);
         if(!envFile) {
-            createEnvFile(path, envObject);
+            //createEnvFile(path, envObject);
             return;
         }
     }
