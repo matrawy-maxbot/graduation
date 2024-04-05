@@ -56,7 +56,7 @@ const checkEnvFile = (path, envObject) => { // anyKey is an key the will be chec
         let envFile = readFile(path);
         console.log("envFile: ", envFile);
         if(!envFile) {
-            //createEnvFile(path, envObject);
+            createEnvFile(path, envObject);
             return;
         }
     }

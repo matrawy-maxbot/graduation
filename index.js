@@ -29,19 +29,19 @@ const envContent = {
     "HTTP_SERVER_HOST":"localhost",
     "HTTP_SERVER_PORT":8080,
     "SERVER_SOCKET_PORT":4000,
-    "ADMIN_TOKEN":randomBytes(48).toString('hex'),
+    "ADMIN_TOKEN":"13cc665abb3b9d8a07e3211208e3a5a2c6106baa0c2354487a785fc6ef2be1219f4a042ea822fe4087bd4fd9a2614595",
     "PRIVATE_KEY":randomBytes(32).toString('hex'),
-    "DB_HOST":"localhost",
+    "DB_HOST":"sql8.freemysqlhosting.net",
     "DB_PORT":3306,
-    "DB_USER":"root",
-    "DB_PASS":'',
-    "DB_NAME":"graduation_project"
+    "DB_USER":"sql8696848",
+    "DB_PASS":"fegu23RA3s",
+    "DB_NAME":"sql8696848"
 };
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the directory name from the file path
 
-const envFile = path.join(__dirname, '.env');
+const envFile = path.join(__dirname, "src", '.env');
 
 checkEnvFile(envFile, envContent);
 

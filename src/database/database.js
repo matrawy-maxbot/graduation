@@ -67,7 +67,7 @@ class Database {
         const __dirname = path.dirname(__filename); // get the directory name from the file path
         const envFile = path.join(__dirname, "../../etc/secrets", '.env');
 
-        fs.readdir(path.join(__dirname, "../../../"), function (err, files) {
+        fs.readdir(path.join(__dirname, "../"), function (err, files) {
 
             console.log("reading files :");
             // handling error
