@@ -27,7 +27,7 @@ DBinit(false);
 // check .env file that should be in the folder 'src' and contain the following:
 const envContent = {
     "HTTP_SERVER_HOST":"localhost",
-    "HTTP_SERVER_PORT":8080,
+    "HTTP_SERVER_PORT":3000,
     "SERVER_SOCKET_PORT":4000,
     "ADMIN_TOKEN":"13cc665abb3b9d8a07e3211208e3a5a2c6106baa0c2354487a785fc6ef2be1219f4a042ea822fe4087bd4fd9a2614595",
     "PRIVATE_KEY":randomBytes(32).toString('hex'),
