@@ -16,6 +16,8 @@ import { createSocket } from './src/socket/index.js';
 import { checkEnvFile } from './src/middleware/plugins.js';
 import { randomBytes } from 'crypto';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // initialize database at the start of the server
 // If you want to insert some data to the database at the begining, please set it like that :  DBinit(true);
@@ -35,7 +37,13 @@ const envContent = {
     "DB_PASS":'',
     "DB_NAME":"graduation_project"
 };
-checkEnvFile("./src/.env", envContent);
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the directory name from the file path
+
+const envFile = path.join(__dirname, "../../etc/secrets", '.env');
+
+checkEnvFile(envFile, envContent);
 
 const app = express();
 
