@@ -29,8 +29,9 @@ DBinit(false);
 
 // check .env file that should be in the folder 'src' and contain the following:
 const envContent = {
-    "HTTP_SERVER_HOST":"localhost",
+    "HTTP_SERVER_HOST":"https://graduation-9a7o.onrender.com",
     "HTTP_SERVER_PORT":3000,
+    "SERVER_SOCKET_HOST":"ws://graduationws.onrender.com",
     "SERVER_SOCKET_PORT":4000,
     "WEBSOCKET_TOKEN":"f427bc372cf4d5e4159a5be3250fd3f2cb2678fd966794956fc9a4aad10e3fbd",
     "ADMIN_TOKEN":"13cc665abb3b9d8a07e3211208e3a5a2c6106baa0c2354487a785fc6ef2be1219f4a042ea822fe4087bd4fd9a2614595",
@@ -57,7 +58,7 @@ app.use(cors());
 
 app.use(loggerMiddleware);
 
-const client = new websocket('ws://localhost:4000/', null, "http://localhost:" + PORT,
+const client = new websocket(env.socketHost, null, env.host,
 {
     'authorization': 'Bearer ' + env.systemToken
 });
