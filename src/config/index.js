@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { randomBytes } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the directory name from the file path
@@ -20,8 +21,9 @@ const _config = {
         database: process.env.DB_NAME || 'test',
         port: process.env.DB_PORT || 3306
     },
-    privateKEY: process.env.PRIVATE_KEY,
-    systemToken: process.env.ADMIN_TOKEN
+    privateKEY: process.env.PRIVATE_KEY || randomBytes(32).toString('hex'),
+    systemToken: process.env.ADMIN_TOKEN || randomBytes(48).toString('hex'),
+    websocketToken: process.env.WEBSOCKET_TOKEN || randomBytes(32).toString('hex')
 };
 
 export default _config;

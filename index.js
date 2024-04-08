@@ -11,13 +11,16 @@ import reportRouter from './src/routes/report.js';
 import notificationRouter from './src/routes/notification.js';
 import chatRouter from './src/routes/chat.js';
 import scheduleRouter from './src/routes/schedule.js';
+import ws from './src/routes/WS.js';
 import {DBinit} from './src/database/index.js';
-import { createSocket } from './src/socket/index.js';
+//import { createSocket } from './src/socket/index.js';
 import { checkEnvFile } from './src/middleware/plugins.js';
 import { randomBytes } from 'crypto';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import webs from "websocket";
+const websocket = webs.w3cwebsocket;
 
 // initialize database at the start of the server
 // If you want to insert some data to the database at the begining, please set it like that :  DBinit(true);
@@ -29,8 +32,9 @@ const envContent = {
     "HTTP_SERVER_HOST":"localhost",
     "HTTP_SERVER_PORT":3000,
     "SERVER_SOCKET_PORT":4000,
+    "WEBSOCKET_TOKEN":"f427bc372cf4d5e4159a5be3250fd3f2cb2678fd966794956fc9a4aad10e3fbd",
     "ADMIN_TOKEN":"13cc665abb3b9d8a07e3211208e3a5a2c6106baa0c2354487a785fc6ef2be1219f4a042ea822fe4087bd4fd9a2614595",
-    "PRIVATE_KEY":randomBytes(32).toString('hex'),
+    "PRIVATE_KEY":"339c8b3abddb0362c81fbaeada8414959066e45b46fde8384a8c62bc3b004f71",
     "DB_HOST":"sql8.freemysqlhosting.net",
     "DB_PORT":3306,
     "DB_USER":"sql8696848",
@@ -45,11 +49,30 @@ const envFile = path.join(__dirname, '.env');
 
 checkEnvFile(envFile, envContent);
 
+const PORT = env.port;
+
 const app = express();
 
 app.use(cors());
 
 app.use(loggerMiddleware);
+
+const client = new websocket('ws://localhost:4000/', null, "http://localhost:" + PORT,
+{
+    'authorization': 'Bearer ' + env.systemToken
+});
+
+client.onerror = function(error) {
+    console.log('WebSocket: Connection Error', error);
+};
+
+client.onopen = function() {
+    console.log('WebSocket: Client Connected');
+};
+
+client.onclose = function() {
+    console.log('WebSocket: echo-protocol Client Closed');
+};
 
 app.use('/login', login);
 app.use('/users', usersRouter);
@@ -61,11 +84,11 @@ app.use('/reports', reportRouter);
 app.use('/notifications', notificationRouter);
 app.use('/chat', chatRouter);
 app.use('/schedules', scheduleRouter);
+app.use('/sendEventWS', (req, res, next) => { req.ws = client;next() }, ws);
 
 console.log("\n-------------------------------\n");
-createSocket(env.socketPort);
+//createSocket(env.socketPort);
 
-const PORT = env.port;
 app.listen(PORT, () => {
     console.log(`# Server running at http://localhost:${PORT}/`);
     console.log("\n-------------------------------\n");

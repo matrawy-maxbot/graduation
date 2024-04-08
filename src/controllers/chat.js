@@ -3,8 +3,9 @@ import { sendError } from '../middleware/error.js';
 import { send } from '../middleware/send.js';
 import { generateId, generateFileName } from '../middleware/id.js';
 import { DBselect, DBinsert, uploadFile } from '../database/index.js';
-import { event, sendEvent } from '../socket/events.js';
+//import { event, sendEvent } from '../socket/events.js';
 import { checkLogin } from './login.js';
+import { sendEvent } from '../middleware/sendEvent.js';
 
 const getChats = async ( req, res, next) => {
     
@@ -42,16 +43,16 @@ const createMessage = async ( req, res, next) => {
             const f = req.body.file[i];
             let fileName = await uploadFile(f, generateFileName("chat"), "files/chat", 'any').catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
             chat = await DBinsert('chat', {...req.body, id:generateId(), file:fileName}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-            sendEvent("createMessage", {...req.body, id:generateId(), file:fileName});
+            await sendEvent("createMessage", {...req.body, id:generateId(), file:fileName}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
         }
     } else if(req.body.file) {
         let fileName = await uploadFile(req.body.file, generateFileName("chat"), "files/chat", 'any').catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
         chat = await DBinsert('chat', {...req.body, id:generateId(), file:fileName}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-        sendEvent("createMessage", {...req.body, id:generateId(), file:fileName});
+        await sendEvent("createMessage", {...req.body, id:generateId(), file:fileName}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     }
     if(req.body.content) {
         chat = await DBinsert('chat', {...req.body, id:generateId(), file:null}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-        sendEvent("createMessage", {...req.body, id:generateId(), file:null});
+        await sendEvent("createMessage", {...req.body, id:generateId(), file:null}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     }
     send(201, res, "success", chat);
 

@@ -3,7 +3,8 @@ import { sendError } from '../middleware/error.js';
 import { send } from '../middleware/send.js';
 import { generateId } from '../middleware/id.js';
 import { DBselect, DBinsert } from '../database/index.js';
-import { event, sendEvent } from '../socket/events.js';
+//import { event, sendEvent } from '../socket/events.js';
+import { sendEvent } from '../middleware/sendEvent.js';
 import { checkLogin } from './login.js';
 
 const getNotifications = async ( req, res, next) => {
@@ -34,7 +35,7 @@ const createNotification = async ( req, res, next) => {
     req.body.destination = req.params.id;
     console.log(req.body);
     const notification = await DBinsert('notifications', req.body).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-    sendEvent("createNotification", req.body);
+    await sendEvent("createNotification", req.body).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!notification) return;
     send(201, res, "success", notification);
 
