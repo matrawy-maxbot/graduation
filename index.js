@@ -19,8 +19,8 @@ import { randomBytes } from 'crypto';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import webs from "websocket";
-const websocket = webs.w3cwebsocket;
+import websocket from "websocket";
+const { w3cwebsocket } = websocket;
 
 // initialize database at the start of the server
 // If you want to insert some data to the database at the begining, please set it like that :  DBinit(true);
@@ -31,7 +31,7 @@ DBinit(false);
 const envContent = {
     "HTTP_SERVER_HOST":"https://graduation-9a7o.onrender.com",
     "HTTP_SERVER_PORT":3000,
-    "SERVER_SOCKET_HOST":"ws://graduationws.onrender.com",
+    "SERVER_SOCKET_HOST":"wss://graduationws.onrender.com",
     "SERVER_SOCKET_PORT":4000,
     "WEBSOCKET_TOKEN":"f427bc372cf4d5e4159a5be3250fd3f2cb2678fd966794956fc9a4aad10e3fbd",
     "ADMIN_TOKEN":"13cc665abb3b9d8a07e3211208e3a5a2c6106baa0c2354487a785fc6ef2be1219f4a042ea822fe4087bd4fd9a2614595",
@@ -58,9 +58,8 @@ app.use(cors());
 
 app.use(loggerMiddleware);
 
-const client = new websocket(env.socketHost, null, env.host,
-{
-    'authorization': 'Bearer ' + env.systemToken
+const client = new w3cwebsocket(env.socketHost, null, env.host, {
+    "authorization": "bearer eyJpZCI6IjM0MjE5NjE2NjI3ODQiLCJpYXQiOjE3MTI1NDcwMTgsImV4cCI6MTcxMjYzMzQxOH0.Qb20aTvHe6ACWCFvj8sUjAnngjHcQzidvz-wcajl8bQ"
 });
 
 client.onerror = function(error) {
