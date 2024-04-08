@@ -59,7 +59,7 @@ app.use(cors());
 app.use(loggerMiddleware);
 
 const client = new w3cwebsocket(env.socketHost, null, env.host, {
-    "authorization": "bearer eyJpZCI6IjM0MjE5NjE2NjI3ODQiLCJpYXQiOjE3MTI1NDcwMTgsImV4cCI6MTcxMjYzMzQxOH0.Qb20aTvHe6ACWCFvj8sUjAnngjHcQzidvz-wcajl8bQ"
+    "authorization": "bearer " + env.systemToken,
 });
 
 client.onerror = function(error) {
