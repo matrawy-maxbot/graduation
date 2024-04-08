@@ -14,6 +14,7 @@ const sendWS = async ( req, res, next) => {
 
     console.log("Event : ", event);
     console.log("Data : ", data);
+    console.log("System Auth : ", systemAuth);
 
     if(!event || !data || !systemAuth) {
         sendError({status:statusCodes.BAD_REQUEST, response:res, message:"Missing required parameters"});
