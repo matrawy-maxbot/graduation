@@ -10,7 +10,7 @@ const sendWS = async ( req, res, next) => {
     console.log("headers : ", req.headers);
 
     const event = req.headers.Event || req.headers.event;
-    let systemAuth = req.headers.wsAuth || req.headers.wsAuth;
+    let systemAuth = req.headers.wsAuth || req.headers.wsauth;
     systemAuth = systemAuth?.replace(/Bearer/i, "").replace(/\s+/g, "");
     const data = req.body;
 
