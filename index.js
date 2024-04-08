@@ -67,7 +67,7 @@ client.onerror = function(error) {
 };
 
 client.onopen = function() {
-    console.log('WebSocket: Client Connected');
+    console.log('WebSocket: Client Connected successfully!');
 };
 
 client.onclose = function() {
