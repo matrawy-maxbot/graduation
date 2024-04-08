@@ -3,7 +3,7 @@ import env from '../config/index.js';
 const sendEvent = (event, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            fetch('http://localhost:8080/sendEventWS', {
+            fetch(env.host + '/sendEventWS', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
