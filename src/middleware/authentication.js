@@ -14,6 +14,7 @@ const verifyToken = (token) => {
         token = token.replace(/Bearer/i, "").replace(/\s+/g, "");
         const header = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
         const privateKey = env.privateKEY;
+        console.log("privateKey  |:|  ", privateKey);
         const tkn = jwt.verify(header + "." + token, privateKey);
         return {status:true, data:tkn};
     } catch (error) {
