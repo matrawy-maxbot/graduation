@@ -25,7 +25,7 @@ const { w3cwebsocket } = websocket;
 // initialize database at the start of the server
 // If you want to insert some data to the database at the begining, please set it like that :  DBinit(true);
 // But be sure to set it to false after the first run, otherwise it will insert the same data again and again
-DBinit(true);
+DBinit(false);
 
 // check .env file that should be in the folder 'src' and contain the following:
 const envContent = {
