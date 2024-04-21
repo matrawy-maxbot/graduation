@@ -36,11 +36,11 @@ const envContent = {
     "WEBSOCKET_TOKEN":"f427bc372cf4d5e4159a5be3250fd3f2cb2678fd966794956fc9a4aad10e3fbd",
     "ADMIN_TOKEN":"13cc665abb3b9d8a07e3211208e3a5a2c6106baa0c2354487a785fc6ef2be1219f4a042ea822fe4087bd4fd9a2614595",
     "PRIVATE_KEY":"339c8b3abddb0362c81fbaeada8414959066e45b46fde8384a8c62bc3b004f71",
-    "DB_HOST":"klo.h.filess.io",
-    "DB_PORT":3307,
-    "DB_USER":"GraduationHospital_circusedge",
-    "DB_PASS":"ecab47fbd81ff1c9f18e8b92fbcf9af7323f5e4c",
-    "DB_NAME":"GraduationHospital_circusedge"
+    "DB_HOST":"sql.freedb.tech",
+    "DB_PORT":3306,
+    "DB_USER":"freedb_graduationhospitaladmin",
+    "DB_PASS":"MYA!DxFBxTk6??9",
+    "DB_NAME":"freedb_graduationhospital"
 };
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
