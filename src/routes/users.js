@@ -1,6 +1,6 @@
 import express from 'express';
 import {getUsers, getUser, createUser, updateUser, deleteUser} from '../controllers/users.js';
-import { checkRequired } from '../middleware/plugins.js';
+import { checkRequired, checkUnique } from '../middleware/plugins.js';
 import { checkToken, checkRole } from '../middleware/authentication.js';
 import fileUpload from 'express-fileupload';
 import { call } from '../middleware/handleError.js';
@@ -13,7 +13,7 @@ router.patch('/me', call(checkToken), call(checkRole, "user"), (req,res,next) =>
 router.delete('/me', call(checkToken), call(checkRole, "user"), call(deleteUser));
 router.get('/', call(checkToken), call(checkRole, "admin"), call(getUsers));
 router.get('/:id', call(checkToken), call(checkRole, "all"), call(getUser));
-router.post('/', call(checkToken), call(checkRole, "admin"), call(checkRequired, ['name', 'phone', 'pass']), call(createUser));
+router.post('/', call(checkToken), call(checkRole, "admin"), call(checkRequired, ['name', 'phone', 'pass']), call(checkUnique, ["admins", "users", "doctors"], "phone"), call(createUser));
 router.patch('/:id', call(checkToken), call(checkRole, "admin"), (req,res,next) => { if(req.files) req.body.avatar = req.files.avatar;next(); }, call(checkRequired, ['name||avatar']), call(updateUser));
 //router.delete('/', call(checkToken), call(checkRole, "admin"), call(deleteUser));
 router.delete('/:id', call(checkToken), call(checkRole, "admin"), call(deleteUser));
