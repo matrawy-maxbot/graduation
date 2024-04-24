@@ -3,6 +3,7 @@ import { sendError } from './error.js';
 import { openSync, writeFileSync, readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
+import { DBselect } from '../database/index.js';
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = dirname(__filename); // get the directory name from the file path
@@ -96,9 +97,47 @@ const readFile = (path) => {
     }
 }
 
+const checkUnique = async (req, res, next, tables = [], key, value) => {
+
+    if(!tables.length || tables.length == 0) {
+        sendError({status: statusCodes.BAD_REQUEST, response:res, message: `No tables to check.`});
+        return;
+    }
+    if(!key) {
+        sendError({status: statusCodes.BAD_REQUEST, response:res, message: `No key to check.`});
+        return;
+    }
+    if(!value) {
+        if(req.body[key]) value = req.body[key];
+        else if(req.params[key]) value = req.params[key];
+        else {
+            sendError({status: statusCodes.BAD_REQUEST, response:res, message: `No value to check.`});
+            return;
+        }
+    }
+    if(!Array.isArray(tables) || !tables.length) tables = [tables];
+
+    console.log("tables to check: ", tables, " key: ", key, " value: ", value, {[key]: value});
+    let found = false;
+    for(let table of tables) {
+        let data = await DBselect(table, key, {[key]: value}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+        console.log("data: ", data);
+        if(data.length > 0) {
+            found = true;
+            break;
+        }
+    }
+    if(found) {
+        sendError({status: statusCodes.BAD_REQUEST, response:res, message: `This ${key} is already signed up. Please try another one.`});
+        return;
+    }
+    next();
+}
+
 export {
     objectWithoutKey,
     requiredKeys,
     checkRequired,
-    checkEnvFile
+    checkEnvFile,
+    checkUnique
 };
