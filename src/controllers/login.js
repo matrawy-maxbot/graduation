@@ -4,6 +4,7 @@ import { send } from '../middleware/send.js';
 import { generateToken } from '../middleware/authentication.js';
 import { compare } from '../middleware/hash.js';
 import { DBselect } from '../database/index.js';
+import { objectWithoutKey } from '../middleware/plugins.js';
 
 const login = async ( req, res, next) => {
 
@@ -17,7 +18,7 @@ const login = async ( req, res, next) => {
         console.log("compr : ", compr)
         if(compr) {
             const JWTToken = generateToken({id: user.id});
-            send(200, res, "success", {token:JWTToken});
+            send(200, res, "success", {token:JWTToken, user: objectWithoutKey(user, "pass")});
         } else {
             sendError({status: statusCodes.UNAUTHORIZED, response:res, message: "Password is incorrect"});
         }
