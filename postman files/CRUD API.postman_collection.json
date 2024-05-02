@@ -1162,7 +1162,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"matrawy\",\n    \"phone\": \"01126344753\",\n    \"pass\": \"456\"\n}",
+							"raw": "{\n\t\"name\": \"fararari\",\n    \"phone\": \"01223215468\",\n    \"pass\": \"456\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1196,7 +1196,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"fofo\",\r\n    \"phone\": \"01552913017\",\r\n    \"pass\": \"123\",\r\n    \"speciality\":0,\r\n    \"expertment\":\"2 years\"\r\n}",
+							"raw": "{\r\n    \"name\": \"matata\",\r\n    \"phone\": \"01522534867\",\r\n    \"pass\": \"123\",\r\n    \"speciality\":0,\r\n    \"expertment\":\"2 years\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1229,7 +1229,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\":\"franceee\",\r\n    \"phone\": \"+00201550980119\",\r\n    \"pass\": \"fdv3r4g4g34\",\r\n    \"avatar\": \"dfdferg44gr4gdg\"\r\n}",
+							"raw": "{\r\n    \"name\":\"shell\",\r\n    \"phone\": \"01223215468\",\r\n    \"pass\": \"123\",\r\n    \"avatar\": \"fdg54g5egdf\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1823,7 +1823,8 @@
 									"});",
 									""
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -1832,7 +1833,7 @@
 						"header": [
 							{
 								"key": "authorization",
-								"value": "{{auth}}",
+								"value": "Bearer {{auth}}",
 								"type": "text",
 								"uuid": "d869a1f1-07ea-476c-b386-d226378f42c6"
 							}
