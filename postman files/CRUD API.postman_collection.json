@@ -11,6 +11,57 @@
 			"name": "Get API",
 			"item": [
 				{
+					"name": "checkPhone",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{auth}}",
+								"type": "text",
+								"uuid": "99061e18-823d-497e-9cfe-7e4f7748d65c"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"uuid": "1093dcaf-de7d-4a85-b2e9-7dd1d83417f2"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/check?phone=1234567889",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"check"
+							],
+							"query": [
+								{
+									"key": "phone",
+									"value": "1234567889"
+								}
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
 					"name": "All users",
 					"event": [
 						{
@@ -32,12 +83,14 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "b3c79ce2-b097-40b7-9b60-d7ae8dd9e139"
 							},
 							{
 								"key": "Content-Type",
 								"value": "application/json",
-								"type": "text"
+								"type": "text",
+								"uuid": "9c9fe38f-b15a-4c40-9f86-1594bc59935a"
 							}
 						],
 						"url": {
@@ -61,7 +114,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "dba7aa46-8481-4334-91d4-bb3a5834d1ca"
 							}
 						],
 						"url": {
@@ -90,7 +144,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "2d777414-5728-4b0f-8b49-3410ff3ceadd"
 							}
 						],
 						"url": {
@@ -114,7 +169,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "c38853d4-bdc2-4f32-9a89-9faf0fdd56de"
 							}
 						],
 						"url": {
@@ -137,7 +193,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "f25cbffd-149e-47bb-b409-47d5775f64ed"
 							}
 						],
 						"url": {
@@ -166,7 +223,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "282e538c-2f09-47be-88f6-592072054bde"
 							}
 						],
 						"url": {
@@ -190,16 +248,22 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"uuid": "70e0b0d6-9690-4a5b-a391-98893faf655b"
 							}
 						],
 						"url": {
-							"raw": "{{baseURL}}/doctors",
+							"raw": "{{baseURL}}/doctors?sort=rating",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"doctors"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "rating"
+								}
 							]
 						}
 					},
@@ -213,7 +277,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "712c189a-d5f6-4434-a8be-180fa4649814"
 							}
 						],
 						"url": {
@@ -242,7 +307,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "d52bf2b7-19bf-4ef0-8338-78c07667d9fc"
 							}
 						],
 						"url": {
@@ -266,7 +332,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "bcaba5a5-1725-4679-8d47-fb93b15f191f"
 							}
 						],
 						"url": {
@@ -289,7 +356,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "63870d3e-8257-406c-9b9a-b67f50e124bc"
 							}
 						],
 						"url": {
@@ -319,7 +387,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "f5be854a-e7c7-4192-9d1c-6fac83193577"
 							}
 						],
 						"url": {
@@ -344,7 +413,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "d3de3d37-6684-45da-bccf-d35a9da1a290"
 							}
 						],
 						"url": {
@@ -374,7 +444,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "34b8c2e2-f1a6-4b6e-a3e4-7e19ec097817"
 							}
 						],
 						"url": {
@@ -399,7 +470,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "3c8c7276-65e5-4395-ba63-8dcddfdaf3bb"
 							}
 						],
 						"url": {
@@ -429,7 +501,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "2db7df7c-0368-475f-8f37-6c16df03bb09"
 							}
 						],
 						"url": {
@@ -454,7 +527,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "7a9ce43d-8155-4885-a01e-9886942c57be"
 							}
 						],
 						"url": {
@@ -477,7 +551,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "e43a754f-6e8a-4eff-8b12-687278c306d9"
 							}
 						],
 						"url": {
@@ -507,7 +582,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "93ea70de-6e2f-4a87-9381-bd7b9cdc9b57"
 							}
 						],
 						"url": {
@@ -532,7 +608,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "28c8872b-6b7c-43c4-9f89-351b22dd23e2"
 							}
 						],
 						"url": {
@@ -562,7 +639,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "d50687b8-3358-403f-80ea-25c0dab84d16"
 							}
 						],
 						"url": {
@@ -587,7 +665,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "26950e26-21c2-4823-aa4a-c45572ed074c"
 							}
 						],
 						"url": {
@@ -617,7 +696,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "d6812316-3832-4bf5-8b2d-ee9f0078a904"
 							}
 						],
 						"url": {
@@ -642,7 +722,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "0fb32f33-07d0-4d64-ae86-e73c9e15750b"
 							}
 						],
 						"url": {
@@ -665,7 +746,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "1bb4592d-077e-4791-8e06-93956913f84c"
 							}
 						],
 						"url": {
@@ -694,7 +776,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "25047e9b-c268-4ec0-b395-aef671e5efa8"
 							}
 						],
 						"url": {
@@ -718,7 +801,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "b71aac87-f3be-45e0-8fed-54d013a35df8"
 							}
 						],
 						"url": {
@@ -742,7 +826,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "6313086c-809b-4e74-8038-4a31e79af1eb"
 							}
 						],
 						"url": {
@@ -765,7 +850,8 @@
 							{
 								"key": "Authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "6baf514d-0dce-4ceb-a400-bd5f36488484"
 							}
 						],
 						"url": {
@@ -789,7 +875,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg4ODk1MDMwMDUiLCJpYXQiOjE3MDk1ODAzMDIsImV4cCI6MTcwOTY2NjcwMn0.DNbfygkYt2NueOLneM2GuKDALQXDpmIBsY3QCKVawX0",
-								"type": "text"
+								"type": "text",
+								"uuid": "37d20861-70a7-4121-ad5e-886d6d34ff59"
 							}
 						],
 						"url": {
@@ -813,7 +900,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MjMwODc2NDc2NTQiLCJpYXQiOjE3MTM2NzA4NTYsImV4cCI6MTcxMzc1NzI1Nn0.hajrE47kTJqIWYLtzD3_XrW9B_3clSEAkHL6T1DMJOk",
-								"type": "text"
+								"type": "text",
+								"uuid": "a31e65ce-e246-4fb1-a7a0-33d6eb62948b"
 							}
 						],
 						"url": {
@@ -837,7 +925,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg5OTc3NTM5MjUiLCJpYXQiOjE3MDk1ODE0NjUsImV4cCI6MTcwOTY2Nzg2NX0.WqeBeC20cE767AP9j2Zz2TQW3qPU_NWqk0QJvHLNF_g",
-								"type": "text"
+								"type": "text",
+								"uuid": "2d5f8638-a74d-4cd9-8105-08a501f9c2fd"
 							}
 						],
 						"url": {
@@ -862,7 +951,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg4ODk1MDMwMDUiLCJpYXQiOjE3MDk1ODAzMDIsImV4cCI6MTcwOTY2NjcwMn0.DNbfygkYt2NueOLneM2GuKDALQXDpmIBsY3QCKVawX0",
-								"type": "text"
+								"type": "text",
+								"uuid": "df38e3f8-2f37-4abc-be62-e3dd7cba44a5"
 							}
 						],
 						"url": {
@@ -887,7 +977,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg5OTc3NTM5MjUiLCJpYXQiOjE3MDk1ODE0NjUsImV4cCI6MTcwOTY2Nzg2NX0.WqeBeC20cE767AP9j2Zz2TQW3qPU_NWqk0QJvHLNF_g",
-								"type": "text"
+								"type": "text",
+								"uuid": "efb58825-532d-4203-9f12-83151e166f42"
 							}
 						],
 						"url": {
@@ -912,7 +1003,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg4ODk1MDMwMDUiLCJpYXQiOjE3MDk1ODAzMDIsImV4cCI6MTcwOTY2NjcwMn0.DNbfygkYt2NueOLneM2GuKDALQXDpmIBsY3QCKVawX0",
-								"type": "text"
+								"type": "text",
+								"uuid": "5a23c95b-0c30-4507-ae93-37fb2aa11eb6"
 							}
 						],
 						"url": {
@@ -937,7 +1029,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg5OTc3NTM5MjUiLCJpYXQiOjE3MDk1ODE0NjUsImV4cCI6MTcwOTY2Nzg2NX0.WqeBeC20cE767AP9j2Zz2TQW3qPU_NWqk0QJvHLNF_g",
-								"type": "text"
+								"type": "text",
+								"uuid": "bd1c7729-6ed8-45de-b42e-f987cb50afb3"
 							}
 						],
 						"url": {
@@ -961,7 +1054,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg4ODk1MDMwMDUiLCJpYXQiOjE3MDk1ODAzMDIsImV4cCI6MTcwOTY2NjcwMn0.DNbfygkYt2NueOLneM2GuKDALQXDpmIBsY3QCKVawX0",
-								"type": "text"
+								"type": "text",
+								"uuid": "af50f526-26d7-4186-a810-bbf64235868b"
 							}
 						],
 						"url": {
@@ -992,7 +1086,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg4ODk1MDMwMDUiLCJpYXQiOjE3MDk1ODAzMDIsImV4cCI6MTcwOTY2NjcwMn0.DNbfygkYt2NueOLneM2GuKDALQXDpmIBsY3QCKVawX0",
-								"type": "text"
+								"type": "text",
+								"uuid": "3271d5e6-b494-4931-89eb-32bbecb76de8"
 							}
 						],
 						"url": {
@@ -1016,7 +1111,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg4ODk1MDMwMDUiLCJpYXQiOjE3MDk1ODAzMDIsImV4cCI6MTcwOTY2NjcwMn0.DNbfygkYt2NueOLneM2GuKDALQXDpmIBsY3QCKVawX0",
-								"type": "text"
+								"type": "text",
+								"uuid": "2883b125-b7f6-4da5-a5c1-da62153ea9e9"
 							}
 						],
 						"url": {
@@ -1060,7 +1156,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "9362598b-3bf3-4c0a-aaac-73589d5c2423"
 							}
 						],
 						"body": {
@@ -1093,7 +1190,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "fb54647b-f2ba-4f0d-abc1-c104102ad521"
 							}
 						],
 						"body": {
@@ -1125,7 +1223,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "5c0640a8-48c4-419b-b0ee-784f0f1c2430"
 							}
 						],
 						"body": {
@@ -1157,7 +1256,8 @@
 							{
 								"key": "authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg4ODk1MDMwMDUiLCJpYXQiOjE3MDk1ODAzMDIsImV4cCI6MTcwOTY2NjcwMn0.DNbfygkYt2NueOLneM2GuKDALQXDpmIBsY3QCKVawX0",
-								"type": "text"
+								"type": "text",
+								"uuid": "958f39a4-3f20-44d4-9422-58bcb774f98d"
 							}
 						],
 						"body": {
@@ -1191,7 +1291,8 @@
 							{
 								"key": "authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg5OTc3NTM5MjUiLCJpYXQiOjE3MDk1ODE0NjUsImV4cCI6MTcwOTY2Nzg2NX0.WqeBeC20cE767AP9j2Zz2TQW3qPU_NWqk0QJvHLNF_g",
-								"type": "text"
+								"type": "text",
+								"uuid": "0fc47a64-269d-4aa5-88ca-2b696a88c9b2"
 							}
 						],
 						"body": {
@@ -1224,7 +1325,8 @@
 							{
 								"key": "authorization",
 								"value": "bearer eyJpZCI6IjM0MjE5NjE2NjI3ODQiLCJpYXQiOjE3MTI1NDQ5MDcsImV4cCI6MTcxMjYzMTMwN30.FkUWMC8yyaR5tDxXFb3gpqoNm50hjViLCuXvd_hq17Y",
-								"type": "text"
+								"type": "text",
+								"uuid": "10a0e36f-11dd-4564-ae4a-4dfc6c8aef04"
 							}
 						],
 						"body": {
@@ -1257,7 +1359,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "fb60bb4b-5e51-461e-9601-4586ec473196"
 							}
 						],
 						"url": {
@@ -1282,7 +1385,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "34c486f7-200a-43a0-b1a2-4dc90557969f"
 							}
 						],
 						"body": {
@@ -1302,6 +1406,100 @@
 							"path": [
 								"notifications",
 								"3419528158235"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resetPassword",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "bearer eyJpZCI6IjM0MjMzNTI1MDUyNTMiLCJpYXQiOjE3MTQ0MjQzNzQsImV4cCI6MTcxNDUxMDc3NH0.H0JbhThpj4CdOFegFB_sQD5Z2qZY6MRZM3t_b93nBZc",
+								"type": "text",
+								"uuid": "1ac25847-95ab-4020-97ea-994142e82bc0"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"oldpassword\":\"456\",\r\n    \"newpassword\":\"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/password/reset",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"password",
+								"reset"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forgetPassword",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "bearer {{auth}}",
+								"type": "text",
+								"uuid": "36eef5c3-85a4-429d-a265-0aac64a543dd"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"newpassword\":\"789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/password/forget/3423352505253",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"password",
+								"forget",
+								"3423352505253"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "completeAppointment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "bearer eyJpZCI6IjM0MjQwMDg1NDc3MTgiLCJpYXQiOjE3MTQ1OTE3NjAsImV4cCI6MTcxNDY3ODE2MH0.ZPoCN0X3iDyRExD916BToioC-L6U0LWwWmrbtrHjt0g",
+								"uuid": "efab65b5-4311-4511-b7df-964d50387f58"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/appointments/1001/completed",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"appointments",
+								"1001",
+								"completed"
 							]
 						}
 					},
@@ -1334,7 +1532,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "e67563bd-edae-45d6-a04d-f0512c0edf80"
 							}
 						],
 						"body": {
@@ -1368,7 +1567,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "c9af5db2-ae7f-4ca3-8158-9225a716d8c6"
 							}
 						],
 						"body": {
@@ -1405,7 +1605,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "bae4512f-bf5a-4fd4-a607-e58bd575cd1c"
 							}
 						],
 						"body": {
@@ -1439,7 +1640,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "db736cdc-aead-4b83-94be-9ac89db3c91e"
 							}
 						],
 						"url": {
@@ -1464,7 +1666,8 @@
 							{
 								"key": "Authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "b8e16dea-edb5-4ea1-b2be-0705b8cb7efb"
 							}
 						],
 						"body": {
@@ -1496,13 +1699,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJpZCI6IjM0MTg4ODk1MDMwMDUiLCJpYXQiOjE3MDk1ODAzMDIsImV4cCI6MTcwOTY2NjcwMn0.DNbfygkYt2NueOLneM2GuKDALQXDpmIBsY3QCKVawX0",
-								"type": "text"
+								"value": "Bearer eyJpZCI6IjM0MjQwMDg1NDc3MTgiLCJpYXQiOjE3MTQ1OTE3NjAsImV4cCI6MTcxNDY3ODE2MH0.ZPoCN0X3iDyRExD916BToioC-L6U0LWwWmrbtrHjt0g",
+								"uuid": "cc01a99b-1c15-47cf-9a95-b694abd1c565"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\":\"dr.Elalamy\"\r\n}",
+							"raw": "{\r\n    \"default_patient_time\":1800\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1530,7 +1733,8 @@
 							{
 								"key": "Authorization",
 								"value": "bearer eyJpZCI6IjM0MTk1MjgwNjM5MjIiLCJpYXQiOjE3MTAxMTEyNzksImV4cCI6MTcxMDE5NzY3OX0.B6se5ejaFBri9eEEqeZWKaNTpIr7M9GWyqIBiUlSaBE",
-								"type": "text"
+								"type": "text",
+								"uuid": "e0962b16-71cf-4318-8299-35b627d15ab5"
 							}
 						],
 						"body": {
@@ -1569,7 +1773,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg4ODk1MDMwMDUiLCJpYXQiOjE3MDk1ODAzMDIsImV4cCI6MTcwOTY2NjcwMn0.DNbfygkYt2NueOLneM2GuKDALQXDpmIBsY3QCKVawX0",
-								"type": "text"
+								"type": "text",
+								"uuid": "9840fae7-a931-4492-9065-8061a42d1e60"
 							}
 						],
 						"body": {
@@ -1628,7 +1833,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "d869a1f1-07ea-476c-b386-d226378f42c6"
 							}
 						],
 						"body": {
@@ -1648,53 +1854,6 @@
 							"path": [
 								"users",
 								"222334"
-							]
-						},
-						"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
-					},
-					"response": []
-				},
-				{
-					"name": "DeleteCurrentUser",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful DELETE request\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "authorization",
-								"value": "{{auth}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/users",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"users"
 							]
 						},
 						"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
@@ -1723,7 +1882,8 @@
 							{
 								"key": "authorization",
 								"value": "{{auth}}",
-								"type": "text"
+								"type": "text",
+								"uuid": "d578f7df-682f-493a-bae3-bc3fa975d820"
 							}
 						],
 						"body": {
@@ -1743,53 +1903,6 @@
 							"path": [
 								"doctors",
 								"222555"
-							]
-						},
-						"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
-					},
-					"response": []
-				},
-				{
-					"name": "DeleteCurrentDoctor",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful DELETE request\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "authorization",
-								"value": "{{auth}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/doctors",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"doctors"
 							]
 						},
 						"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
@@ -1818,7 +1931,8 @@
 							{
 								"key": "authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg5OTc3NTM5MjUiLCJpYXQiOjE3MDk1ODE0NjUsImV4cCI6MTcwOTY2Nzg2NX0.WqeBeC20cE767AP9j2Zz2TQW3qPU_NWqk0QJvHLNF_g",
-								"type": "text"
+								"type": "text",
+								"uuid": "f30ecc79-3139-4a61-b872-6d94abc85354"
 							}
 						],
 						"body": {
@@ -1852,7 +1966,8 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer eyJpZCI6IjM0MTg4ODk0NjA4ODIiLCJpYXQiOjE3MDk1ODA2OTQsImV4cCI6MTcwOTY2NzA5NH0.lWl_LXflbqgrHgHsOvz-c8OD58plkoJCmnxogY1r2SM",
-								"type": "text"
+								"type": "text",
+								"uuid": "d9c98521-8acf-4123-a17a-9e0e49c23a6a"
 							}
 						],
 						"url": {
@@ -1870,6 +1985,30 @@
 									"value": null,
 									"disabled": true
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin@me",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJpZCI6IjM0MTg4ODk0NjA4ODIiLCJpYXQiOjE3MDk1ODA2OTQsImV4cCI6MTcwOTY2NzA5NH0.lWl_LXflbqgrHgHsOvz-c8OD58plkoJCmnxogY1r2SM",
+								"uuid": "3d4d3a9d-f4ee-4385-9b8b-54ed498fa6d0"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/admins/me",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"admins",
+								"me"
 							]
 						}
 					},
@@ -1899,7 +2038,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"phone\": \"01126344753\",\n    \"pass\": \"456\"\n}",
+					"raw": "{\n\t\"phone\": \"01522534867\",\n    \"pass\": \"123\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
