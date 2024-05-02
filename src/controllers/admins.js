@@ -63,5 +63,18 @@ const updateAdmin = async ( req, res, next) => {
     send(200, res, "success", admin, ['pass', 'password']);
     
 };
+
+const deleteAdmin = async ( req, res, next) => {
+
+    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+    if(param == "me") {
+        req.params.id = req.owner.id;
+    }
+
+    const admin = await DBdelete('admins', {id: req.params.id}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+    if(!admin) return;
+    send(204, res, "success");
+
+};
   
-export {getAdmins, getAdmin, createAdmin, updateAdmin};
+export { getAdmins, getAdmin, createAdmin, updateAdmin, deleteAdmin };

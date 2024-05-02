@@ -8,9 +8,9 @@ const router = express.Router();
 router.use(express.json());
 router.use(fileUpload());
 
-router.get('/me', call(checkToken), call(checkRole, "user"), call(getUser));
-router.patch('/me', call(checkToken), call(checkRole, "user"), (req,res,next) => { if(req.files) req.body.avatar = req.files.avatar;next(); }, call(checkRequired, ['name||avatar']), call(updateUser));
-router.delete('/me', call(checkToken), call(checkRole, "user"), call(deleteUser));
+router.get('/me', call(checkToken), call(checkRole, ["user", "unsystem"]), call(getUser));
+router.patch('/me', call(checkToken), call(checkRole, ["user", "unsystem"]), (req,res,next) => { if(req.files) req.body.avatar = req.files.avatar;next(); }, call(checkRequired, ['name||avatar']), call(updateUser));
+router.delete('/me', call(checkToken), call(checkRole, ["user", "unsystem"]), call(deleteUser));
 router.get('/', call(checkToken), call(checkRole, "admin"), call(getUsers));
 router.get('/:id', call(checkToken), call(checkRole, "all"), call(getUser));
 router.post('/', call(checkToken), call(checkRole, "admin"), call(checkRequired, ['name', 'phone', 'pass']), call(checkUnique, ["admins", "users", "doctors"], "phone"), call(createUser));

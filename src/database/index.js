@@ -140,6 +140,7 @@ function sqlToJsType(sqlType) {
             return 'string';
 
         case 'INT':
+        case 'TINYINT':
         case 'SMALLINT':
         case 'BIGINT':
         case 'DECIMAL':

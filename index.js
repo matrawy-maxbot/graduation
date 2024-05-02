@@ -2,6 +2,8 @@ import express from 'express';
 import env from './src/config/index.js';
 import { loggerMiddleware } from './src/middleware/logger.js';
 import login from './src/routes/login.js';
+import check from './src/routes/check.js';
+import password from './src/routes/password.js';
 import usersRouter from './src/routes/users.js';
 import adminsRouter from './src/routes/admins.js';
 import doctorsRouter from './src/routes/doctors.js';
@@ -29,7 +31,7 @@ DBinit(false);
 
 // check .env file that should be in the folder 'src' and contain the following:
 const envContent = {
-    "HTTP_SERVER_HOST":"https://graduation-9a7o.onrender.com",
+    "HTTP_SERVER_HOST":"http://localhost:3000",
     "HTTP_SERVER_PORT":3000,
     "SERVER_SOCKET_HOST":"wss://graduationws.onrender.com",
     "SERVER_SOCKET_PORT":4000,
@@ -75,6 +77,8 @@ client.onclose = function() {
 };
 
 app.use('/login', login);
+app.use('/check', check);
+app.use('/password', password);
 app.use('/users', usersRouter);
 app.use('/admins', adminsRouter);
 app.use('/doctors', doctorsRouter);

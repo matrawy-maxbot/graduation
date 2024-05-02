@@ -6,8 +6,8 @@ import { call } from '../middleware/handleError.js';
 const router = express.Router();
 router.use(express.json());
 
-router.get('/users/me', call(checkToken), call(checkRole, "user"), call(getUserReports));
-router.get('/doctors/me', call(checkToken), call(checkRole, "doctor"), call(getDoctorReports));
+router.get('/users/me', call(checkToken), call(checkRole, ["user", "unsystem"]), call(getUserReports));
+router.get('/doctors/me', call(checkToken), call(checkRole, ["doctor", "unsystem"]), call(getDoctorReports));
 router.get('/', call(checkToken), call(checkRole, "admin"), call(getReports));
 router.get('/users', call(checkToken), call(checkRole, "admin"), call(getUsersReports));
 router.get('/users/:id', call(checkToken), call(checkRole, "admin"), call(getUserReports));

@@ -1,7 +1,7 @@
 import env from '../config/index.js';
 import { sendError } from './events.js';
 import { verifyToken } from '../middleware/authentication.js';
-import { checkLogin } from '../controllers/login.js';
+import { checkAccountData } from '../controllers/login.js';
 import statusCodes from '../config/status.js';
 
 const allowedOrigins = ["localhost:4000", "localhost:4001"];
@@ -34,7 +34,7 @@ const checkAuthorization = async (request) => {
         }
         const tkn = verifyToken(authToken);
         if(tkn.status) {
-            let user = await checkLogin(tkn.data.id, "id");
+            let user = await checkAccountData(tkn.data.id, "id");
             if(!user || user.length == 0) {
                 sendError({status:statusCodes.NOT_FOUND, message:"User not found"}, request);
                 reject(false);

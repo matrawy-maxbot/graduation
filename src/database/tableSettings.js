@@ -25,12 +25,15 @@ const checkName = (min, max, val) => {
     }
 }
 
-const checkPhone = (val) => {
+const checkPhone = (val, rtrn = false) => {
     try {
         const numbers = "0123456789+";
         let valArray = val.split("");
         valArray.forEach((a) => {
-            if(!numbers.includes(a)) throw "400#This phone is not valid";
+            if(!numbers.includes(a)) {
+                if(rtrn) return false;
+                else throw "400#This phone is not valid";
+            }
         });
 
         val = val.replace("+00", "+");
@@ -45,10 +48,16 @@ const checkPhone = (val) => {
 
         let phoneCheck = phone(val);
         console.log("phoneCheck ::: ", phoneCheck);
-        if(!phoneCheck.isValid) throw "400#This phone is not valid";
+        
+        if(!phoneCheck.isValid) {
+            if(rtrn) return false;
+            else throw "400#This phone is not valid";
+        }
+        return phoneCheck;
 
     } catch (error) {
-        throw error;
+        if(rtrn) return false;
+        else throw error;
     }
 }
 
@@ -207,4 +216,4 @@ checkObj("appointments", {app_date:"00:00"});
 checkObj("schedules", {sunday:"00:00-00:00"});
 */
 
-export { checkObj };
+export { checkObj, checkPhone };

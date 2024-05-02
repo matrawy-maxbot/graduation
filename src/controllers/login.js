@@ -10,7 +10,7 @@ const login = async ( req, res, next) => {
 
     let { phone, pass, password } = req.body;
     password = pass || password;
-    const user = await checkLogin(phone, "phone", res);
+    const user = await checkAccountData(phone, "phone", res);
     console.log("User : ", user);
     if(user) {
         console.log("password : ", password, user.pass);
@@ -28,20 +28,21 @@ const login = async ( req, res, next) => {
 
 }
 
-const checkLogin = async (value, key, res = undefined) => {
+const checkAccountData = async (value, key, res = undefined, specificCondition = undefined) => {
 
     try {
 
-        let user = await DBselect('admins', '*', {[key]: value}).catch(err => {throw err});
+        let condition = specificCondition || {[key]: value};
+        let user = await DBselect('admins', '*', condition).catch(err => {throw err});
         if(!user) return false;
         let role = "admin";
         if(user.length == 0) {
-            user = await DBselect('doctors', '*', {[key]: value}).catch(err => {throw err});
+            user = await DBselect('doctors', '*', condition).catch(err => {throw err});
             if(!user) return false;
             role = "doctor";
         }
         if(user.length == 0) {
-            user = await DBselect('users', '*', {[key]: value}).catch(err => {throw err});
+            user = await DBselect('users', '*', condition).catch(err => {throw err});
             if(!user) return false;
             role = "user";
         }
@@ -61,4 +62,4 @@ const checkLogin = async (value, key, res = undefined) => {
     
 }   
 
-export {login, checkLogin};
+export {login, checkAccountData};

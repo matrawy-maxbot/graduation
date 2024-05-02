@@ -2,7 +2,7 @@ import statusCodes from '../config/status.js';
 import { sendError } from '../middleware/error.js';
 import jwt from 'jsonwebtoken';
 import env from '../config/index.js';
-import { checkLogin } from '../controllers/login.js';
+import { checkAccountData } from '../controllers/login.js';
 
 const generateToken = (payload, expire) => {
     const privateKey = env.privateKEY;
@@ -60,7 +60,7 @@ const checkRole = async ( req, res, next, role) => {
             res.status(statusCodes.INTERNAL_SERVER_ERROR).send("internal server");
             return false;
         }
-        let user = await checkLogin(tkn.data.id, "id", res);
+        let user = await checkAccountData(tkn.data.id, "id", res);
         if(user.length == 0) {
             res.status(statusCodes.NOT_FOUND).send("User not found");
             return false;

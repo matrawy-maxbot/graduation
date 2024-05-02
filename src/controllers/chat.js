@@ -4,7 +4,7 @@ import { send } from '../middleware/send.js';
 import { generateId, generateFileName } from '../middleware/id.js';
 import { DBselect, DBinsert, uploadFile } from '../database/index.js';
 //import { event, sendEvent } from '../socket/events.js';
-import { checkLogin } from './login.js';
+import { checkAccountData } from './login.js';
 import { sendEvent } from '../middleware/sendEvent.js';
 
 const getChats = async ( req, res, next) => {
@@ -29,7 +29,7 @@ const getChat = async ( req, res, next) => {
 const createMessage = async ( req, res, next) => {
 
     //console.log(req.body);
-    let checkID = await checkLogin(req.params.id, "id", res);
+    let checkID = await checkAccountData(req.params.id, "id", res);
     if(!checkID) {
         sendError({status:statusCodes.NOT_FOUND, response:res, message:"User not found"});
         return false;

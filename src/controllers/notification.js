@@ -5,7 +5,7 @@ import { generateId } from '../middleware/id.js';
 import { DBselect, DBinsert } from '../database/index.js';
 //import { event, sendEvent } from '../socket/events.js';
 import { sendEvent } from '../middleware/sendEvent.js';
-import { checkLogin } from './login.js';
+import { checkAccountData } from './login.js';
 
 const getNotifications = async ( req, res, next) => {
     
@@ -21,7 +21,7 @@ const getNotifications = async ( req, res, next) => {
 
 const createNotification = async ( req, res, next) => {
 
-    let checkID = await checkLogin(req.params.id, "id", res);
+    let checkID = await checkAccountData(req.params.id, "id", res);
     if(!checkID) {
         sendError({status:statusCodes.NOT_FOUND, response:res, message:"User not found"});
         return false;

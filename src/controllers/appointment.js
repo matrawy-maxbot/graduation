@@ -2,7 +2,7 @@ import statusCodes from '../config/status.js';
 import { sendError } from '../middleware/error.js';
 import { send } from '../middleware/send.js';
 import { generateId } from '../middleware/id.js';
-import { DBselect, DBinsert, DBdelete } from '../database/index.js';
+import { DBselect, DBinsert, DBupdate, DBdelete } from '../database/index.js';
 
 const getAppointments = async ( req, res, next) => {
     
@@ -119,6 +119,21 @@ const checkAppointment = async ( req, res, next) => {
     }
 
 }
+
+const completeAppointment = async ( req, res, next) => {
+        
+    const appointment = req.params.id;
+    const result = await DBselect('appointments', '*', {id: appointment}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+    if(!result) return;
+    if(result.length == 0) {
+        sendError({response:res, status:statusCodes.NOT_FOUND, message:"Appointment not found"});
+    } else {
+        const updated = await DBupdate('appointments', {completed: 1}, {id: appointment}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+        if(!updated) return sendError({response:res, status:statusCodes.INTERNAL_SERVER_ERROR, message:"Could not complete the appointment"});
+        send(200, res, "success", updated);
+    }
+
+}
   
 export {
     getAppointments, 
@@ -130,5 +145,6 @@ export {
     getPatientAppointments, 
     createAppointment,
     deleteAppointment,
-    checkAppointment
+    checkAppointment,
+    completeAppointment
 };

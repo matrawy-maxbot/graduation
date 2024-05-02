@@ -80,7 +80,7 @@ const deleteUser = async ( req, res, next) => {
     let id = req.params.id;
     const users = await DBdelete('users', {id: id}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!users) return;
-    send(200, res, "success", users, ['pass', 'password']);
+    send(200, res, "success");
 };
 
 const checkUser = async ( req, res, next) => {
