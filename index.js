@@ -58,7 +58,7 @@ const app = express();
 
 app.use(cors());
 
-app.use('/src/files', express.static('src/files'));
+app.use('/src', express.static('src'));
 
 app.use(loggerMiddleware);
 
