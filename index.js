@@ -14,6 +14,7 @@ import notificationRouter from './src/routes/notification.js';
 import chatRouter from './src/routes/chat.js';
 import scheduleRouter from './src/routes/schedule.js';
 import ws from './src/routes/WS.js';
+import files from './src/routes/files.js';
 import {DBinit} from './src/database/index.js';
 //import { createSocket } from './src/socket/index.js';
 import { checkEnvFile } from './src/middleware/plugins.js';
@@ -90,6 +91,7 @@ app.use('/reports', reportRouter);
 app.use('/notifications', notificationRouter);
 app.use('/chat', chatRouter);
 app.use('/schedules', scheduleRouter);
+app.use('/files', files);
 app.use('/sendEventWS', (req, res, next) => { req.ws = client;next() }, ws);
 
 console.log("\n-------------------------------\n");
