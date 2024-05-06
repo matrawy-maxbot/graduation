@@ -1,6 +1,6 @@
 import statusCodes from '../config/status.js';
 import { sendError } from './error.js';
-import { openSync, writeFileSync, readFileSync } from 'fs';
+import { openSync, writeFileSync, readFileSync, readdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
 import { DBselect } from '../database/index.js';
@@ -97,6 +97,14 @@ const readFile = (path) => {
     }
 }
 
+const readDirectory = (path) => {
+    try {
+        return readdirSync(path);
+    } catch (error) {
+        return error;
+    }
+}
+
 const checkUnique = async (req, res, next, tables = [], key, value) => {
 
     if(!tables.length || tables.length == 0) {
@@ -139,5 +147,6 @@ export {
     requiredKeys,
     checkRequired,
     checkEnvFile,
-    checkUnique
+    checkUnique,
+    readDirectory
 };
