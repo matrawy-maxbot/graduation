@@ -58,6 +58,8 @@ const app = express();
 
 app.use(cors());
 
+app.use('/src/files', express.static('src/files'));
+
 app.use(loggerMiddleware);
 
 const client = new w3cwebsocket(env.socketHost, null, env.host, {
