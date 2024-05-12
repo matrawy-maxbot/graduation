@@ -106,6 +106,22 @@ const checkTime = (val) => {
     }
 }
 
+const checkDate = (val) => {
+    try {
+
+        val = val.toString();
+        val = val.replace(/[0-9][0-9][0-9][0-9]\-([0-9][0-9]|[0-9])\-([0-9][0-9]|[0-9])/g, "");
+        if(val.length > 0) throw "400#please use this format '2024-05-12'";
+        let date = new Date(val);
+        if(date == "Invalid Date") throw "400#This date is not valid";
+        if(date > new Date()) throw "400#This date is not valid";
+        if(date < new Date(new Date().setDate(new Date().getDate() - 1))) throw "400#The date cannot be before yesterday";
+
+    } catch (error) {
+        throw error;
+    }
+}
+
 const checkDepartment = (val) => {
     try {
         if(!departments[val] && typeof departments[val] !== "number") throw "400#This department is not valid";
@@ -135,7 +151,7 @@ const tableSettings = {
     "department":{"min":0,"max":20,"checkfunc":"checkMinMax", "check":function(val) {
         checkDepartment(val.toString());
     }},
-    "app_date":{"min":3,"max":30,"checkfunc":"checkTime"}
+    "app_date":{"min":3,"max":30,"checkfunc":"checkDate"}
     },
 "chat":{
     "content":{"min":0,"max":5000,"checkfunc":"checkMinMax"}
