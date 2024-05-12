@@ -211,6 +211,7 @@ const checkObj = (table, obj) => {
                         if(existCheckFunc == "checkMinMax") checkMinMax(existKey["min"], existKey["max"], obj[ok]);
                         if(existCheckFunc == "checkName") checkName(existKey["min"], existKey["max"], obj[ok].toString());
                         if(existCheckFunc == "checkTime") checkTime(obj[ok].toString());
+                        if(existCheckFunc == "checkDate") checkDate(obj[ok].toString());
                         if(existCheckFunc == "checkScheduleTime") checkScheduleTime(obj[ok].toString());
                         if(existKey["check"]) {
                             existKey["check"](obj[ok]);
