@@ -108,11 +108,14 @@ const checkTime = (val) => {
 
 const checkDate = (val) => {
     try {
-
+        console.log("original val : ", val);
+        let value = val;
         val = val.toString();
         val = val.replace(/[0-9][0-9][0-9][0-9]\-([0-9][0-9]|[0-9])\-([0-9][0-9]|[0-9])/g, "");
         if(val.length > 0) throw "400#please use this format '2024-05-12'";
-        let date = new Date(val);
+        console.log("val : ", value);
+        let date = new Date(value);
+        console.log("date : ", value );
         if(date == "Invalid Date") throw "400#This date is not valid";
         if(date > new Date()) throw "400#This date is not valid";
         if(date < new Date(new Date().setDate(new Date().getDate() - 1))) throw "400#The date cannot be before yesterday";
