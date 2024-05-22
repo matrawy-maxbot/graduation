@@ -117,7 +117,6 @@ const checkDate = (val) => {
         let date = new Date(value);
         console.log("date : ", value );
         if(date == "Invalid Date") throw "400#This date is not valid";
-        if(date > new Date()) throw "400#This date is not valid";
         if(date < new Date(new Date().setDate(new Date().getDate() - 1))) throw "400#The date cannot be before yesterday";
 
     } catch (error) {
