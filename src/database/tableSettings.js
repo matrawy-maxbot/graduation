@@ -1,5 +1,6 @@
 import {phone} from 'phone';
 import departments from './departments.js';
+import { sendError } from '../middleware/error.js';
 
 const checkMinMax = (min, max, val) => {
     try {
@@ -106,7 +107,7 @@ const checkTime = (val) => {
     }
 }
 
-const checkDate = (val) => {
+const checkDate = (val, req = undefined, res = undefined, next = undefined) => {
     try {
         console.log("original val : ", val);
         let value = val;
@@ -114,13 +115,19 @@ const checkDate = (val) => {
         val = val.replace(/[0-9][0-9][0-9][0-9]\-([0-9][0-9]|[0-9])\-([0-9][0-9]|[0-9])/g, "");
         if(val.length > 0) throw "400#please use this format '2024-05-12'";
         console.log("val : ", value);
-        let date = new Date(value);
-        console.log("date : ", value );
+        let date = new Date(new Date(new Date(value).setFullYear(value.split("-")[0], value.split("-")[1] - 1, value.split("-")[2])).setHours(0,0,0,0));
+        console.log("date : ", date.getDate(), date.getMonth(), date.getFullYear());
+        console.log("date2525 : ", date.getUTCDate(), date.getUTCMonth(), date.getUTCFullYear());
         if(date == "Invalid Date") throw "400#This date is not valid";
-        if(date < new Date(new Date().setDate(new Date().getDate() - 1))) throw "400#The date cannot be before yesterday";
-
+        let today = new Date();
+        let yesterday = new Date(new Date(new Date().setFullYear(today.getFullYear(), today.getMonth(), today.getDate() - 1)).setHours(0,0,0,0));
+        console.log("done date11 : ", date, yesterday, date.getTime(), yesterday.getTime());
+        console.log("done date22 : ", date, yesterday, date.getTime(), yesterday.getTime());
+        if(date.getTime() < yesterday.getTime()) throw "400#The date cannot be before yesterday";
+        console.log("done date : ", date.getTime() < yesterday.getTime(), date.getTime() == yesterday.getTime(), date.getTime() > yesterday.getTime() );
+        if(req && res && next) next();
     } catch (error) {
-        throw error;
+        if(res) sendError({status:400, response:res, message:error});
     }
 }
 
@@ -235,4 +242,4 @@ checkObj("appointments", {app_date:"00:00"});
 checkObj("schedules", {sunday:"00:00-00:00"});
 */
 
-export { checkObj, checkPhone };
+export { checkObj, checkPhone, checkDate };
