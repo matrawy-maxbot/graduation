@@ -3,6 +3,7 @@ import { sendError } from '../middleware/error.js';
 import { send } from '../middleware/send.js';
 import { generateId } from '../middleware/id.js';
 import { DBselect, DBinsert, DBupdate, DBdelete } from '../database/index.js';
+import { checkDate } from '../database/tableSettings.js'
 
 const getAppointments = async ( req, res, next) => {
     
@@ -83,16 +84,54 @@ const getPatientAppointments = async ( req, res, next) => {
 
 };
 
-const createAppointment = async ( req, res, next) => {
+const getDoctorSchedule = async (doctorID) => {
+    try {
+        console.log("doctorID: ", doctorID);
+        let doctorSchedule = await DBselect("schedules", "*", {doctor_id:doctorID.toString()}).catch(err => { throw err; });
+        if(!doctorSchedule) throw "400#This doctor has not schedule";
+        if(doctorSchedule.length == 0) throw "400#This doctor has not schedule";
+        return doctorSchedule[0];
+    } catch (error) {
+        throw error;
+    }
+}
 
-    console.log(req.body);
-    req.body.owner_id = req.owner.id;
-    req.body.doctor_id = req.params.id;
-    req.body.id = generateId();
-    // req.body.department = is filled by checkDoctor function in the middleware
-    const appointment = await DBinsert('appointments', req.body).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-    if(!appointment) return;
-    send(201, res, "success", appointment);
+const checkDateOnDoctor = async (req, res, next) => {
+    try {
+        let drID = req.params.id;
+        let val = req.body.app_date;
+        let dayName = new Date(val).toLocaleDateString("en-EN", { weekday: 'long' }).toLowerCase();
+        let doctorSchedule = await getDoctorSchedule(drID).catch(err => { throw err; })
+        console.log("doctorSchedule: ", doctorSchedule);
+        console.log("dayName: ", dayName);
+        console.log("check:", doctorSchedule[dayName]);
+        console.log("check Monday:", doctorSchedule["monday"]);
+        if(!doctorSchedule[dayName] || doctorSchedule[dayName] == null) sendError({response:res, status:statusCodes.BAD_REQUEST, message:"This doctor is not available on this day"});
+        console.log("check2:", doctorSchedule[dayName]);
+        next();
+    } catch (error) {
+        throw error;
+    }
+}
+
+const createAppointment = async (req, res, next) => {
+
+    try {
+        console.log(req.body);
+        req.body.owner_id = req.owner.id;
+        req.body.doctor_id = req.params.id;
+        req.body.id = generateId();
+        let app_date = req.body.app_date;
+
+        console.log("checkDateOnDoctor: ", app_date);
+
+        // req.body.department = is filled by checkDoctor function in the middleware
+        const appointment = await DBinsert('appointments', req.body).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+        if(!appointment) return;
+        send(201, res, "success", appointment);
+    } catch (error) {
+        sendError({status:statusCodes.BAD_REQUEST, response:res, message:error});
+    }
 
 };
 
@@ -146,5 +185,6 @@ export {
     createAppointment,
     deleteAppointment,
     checkAppointment,
-    completeAppointment
+    completeAppointment,
+    checkDateOnDoctor
 };
