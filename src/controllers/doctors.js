@@ -8,74 +8,109 @@ import { hash } from '../middleware/hash.js';
 import { objectWithoutKey } from '../middleware/plugins.js';
 import { getDoctorRatings, getDoctorsRatings } from './ratings.js';
 
-const getDoctors = async ( req, res, next) => {
+const getDoctors = async ( req, res, next, returnValue = true) => {
+    return new Promise(async (resolve, reject) => {
+        let doctors;
+        if(req.query.specific) {
+            let specifics = req.query.specific.split(',').join("','");
+            doctors = await DBselect('doctors', '*', "id IN ('" + specifics + "')").catch(err => { if(returnValue) sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); reject(false); });
+            if(!doctors) reject(false);
+        } else {
+            doctors = await DBselect('doctors', '*').catch(err => { if(returnValue) sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); reject(false); });
+            if(!doctors) reject(false);
+        }
+        const ratings = await getDoctorsRatings(req, res, next, false);
+        console.log(ratings);
+        doctors.forEach(doc => {
+            let doctorRatings = ratings.filter(r => r.doctor_id == doc.id);
+            doctors.filter(d => d.id == doc.id)[0].ratings = doctorRatings;
+            let ratingPoints = 0;
+            let rating = 0;
+            if(doctorRatings.length > 0){
+                doctorRatings.forEach(r => {
 
-    let doctors;
-    if(req.query.specific) {
-        let specifics = req.query.specific.split(',').join("','");
-        doctors = await DBselect('doctors', '*', "id IN ('" + specifics + "')").catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-        if(!doctors) return;
-    } else {
-        doctors = await DBselect('doctors', '*').catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-        if(!doctors) return;
-    }
-    const ratings = await getDoctorsRatings(req, res, next, false);
-    console.log(ratings);
-    doctors.forEach(doc => {
-        let doctorRatings = ratings.filter(r => r.doctor_id == doc.id);
-        doctors.filter(d => d.id == doc.id)[0].ratings = doctorRatings;
-        let ratingPoints = 0;
-        let rating = 0;
-        doctorRatings.forEach(r => {
+                    switch (parseInt(r.rating, 10)) {
+                        case 1:
+                            ratingPoints += -5;
+                        break;
+                        case 2:
+                            ratingPoints += -2;
+                        break;
+                        case 3:
+                            ratingPoints += 1;
+                        break;
+                        case 4:
+                            ratingPoints += 3;
+                        break;
+                        case 5:
+                            ratingPoints += 5;
+                        break;
+                        default:
+                            break;
+                    }
+                    rating += parseInt(r.rating, 10);
 
-            switch (parseInt(r.rating, 10)) {
-                case 1:
-                    ratingPoints += -5;
-                break;
-                case 2:
-                    ratingPoints += -2;
-                break;
-                case 3:
-                    ratingPoints += 1;
-                break;
-                case 4:
-                    ratingPoints += 3;
-                break;
-                case 5:
-                    ratingPoints += 5;
-                break;
-                default:
-                    break;
+                });
+                rating = rating / doctorRatings.length;
             }
-            rating += parseInt(r.rating, 10);
-
+            doctors.filter(d => d.id == doc.id)[0].ratingPoints = ratingPoints;
+            doctors.filter(d => d.id == doc.id)[0].rating = rating;
         });
-        rating = rating / doctorRatings.length;
-        doctors.filter(d => d.id == doc.id)[0].ratingPoints = ratingPoints;
-        doctors.filter(d => d.id == doc.id)[0].rating = rating;
+        let sort = req.query.sort;
+        if(sort == "rating") {
+            doctors = doctors.sort((a, b) => b.ratingPoints - a.ratingPoints);
+        }
+
+        if(returnValue) send(200, res, "success", doctors, ['pass', 'password']);
+        resolve(doctors);
     });
-    let sort = req.query.sort;
-    if(sort == "rating") {
-        doctors = doctors.sort((a, b) => b.ratingPoints - a.ratingPoints);
-    }
-
-    send(200, res, "success", doctors, ['pass', 'password']);
-
 };
 
-const getDoctor = async ( req, res, next) => {
+const getDoctor = async ( req, res, next, returnValue = true) => {
+    return new Promise(async (resolve, reject) => {
+        const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+        if(param == "me") {
+            req.params.id = req.owner.id;
+        }
+        const doctor = await DBselect('doctors', '*', {id: req.params.id}).catch(err => { if(returnValue) sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); reject(false); });
+        if(!doctor) reject(false);
+        const ratings = await getDoctorRatings(req, res, next, false);
+        const dr = ratings.filter(r => r.doctor_id == doctor[0].id);
+        doctor[0].ratings = dr;
+        let ratingPoints = 0;
+        let rating = 0;
+        if(dr.length > 0){
+            dr.forEach(r => {
 
-    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
-    if(param == "me") {
-        req.params.id = req.owner.id;
-    }
-    const doctor = await DBselect('doctors', '*', {id: req.params.id}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-    if(!doctor) return;
-    const ratings = await getDoctorRatings(req, res, next, false);
-    const dr = ratings.filter(r => r.doctor_id == doctor[0].id);
-    doctor[0].ratings = dr;
-    send(200, res, "success", doctor, ['pass', 'password']);
+                switch (parseInt(r.rating, 10)) {
+                    case 1:
+                        ratingPoints += -5;
+                    break;
+                    case 2:
+                        ratingPoints += -2;
+                    break;
+                    case 3:
+                        ratingPoints += 1;
+                    break;
+                    case 4:
+                        ratingPoints += 3;
+                    break;
+                    case 5:
+                        ratingPoints += 5;
+                    break;
+                    default:
+                        break;
+                }
+                rating += parseInt(r.rating, 10);
 
+            });
+            rating = rating / dr.length;
+        }
+        doctor[0].ratingPoints = ratingPoints;
+        doctor[0].rating = rating;
+        if(returnValue) send(200, res, "success", doctor, ['pass', 'password']);
+        resolve(doctor);
+    });
 };
 
 const createDoctor = async ( req, res, next) => {

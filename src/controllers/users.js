@@ -7,39 +7,41 @@ import { hash } from '../middleware/hash.js';
 import { objectWithoutKey } from '../middleware/plugins.js';
 import { getUsersRatings, getUserRatings } from './ratings.js';
 
-const getUsers = async ( req, res, next) => {
-
-    let users;
-    if(req.query.specific) {
-        let specifics = req.query.specific.split(',').join("','");
-        users = await DBselect('users', '*', "id IN ('" + specifics + "')").catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-        if(!users) return;
-    } else {
-        users = await DBselect('users', '*').catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-        if(!users) return;
-    }
-    const ratings = await getUsersRatings(req, res, next, false);
-    console.log(ratings);
-    users.forEach(user => {
-        users.filter(u => u.id == user.id)[0].ratings = ratings.filter(r => r.user_id == user.id);
+const getUsers = async ( req, res, next, returnValue = true) => {
+    return new Promise(async (resolve, reject) => {
+        let users;
+        if(req.query.specific) {
+            let specifics = req.query.specific.split(',').join("','");
+            users = await DBselect('users', '*', "id IN ('" + specifics + "')").catch(err => { if(returnValue) sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); reject(false); });
+            if(!users) reject(false);
+        } else {
+            users = await DBselect('users', '*').catch(err => { if(returnValue) sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); reject(false); });
+            if(!users) reject(false);
+        }
+        const ratings = await getUsersRatings(req, res, next, false);
+        console.log(ratings);
+        users.forEach(user => {
+            users.filter(u => u.id == user.id)[0].ratings = ratings.filter(r => r.user_id == user.id);
+        });
+        if(returnValue) send(200, res, "success", users, ['pass', 'password']);
+        resolve(users);
     });
-    send(200, res, "success", users, ['pass', 'password']);
-
 };
 
-const getUser = async ( req, res, next) => {
-
-    const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
-    if(param == "me") {
-        req.params.id = req.owner.id;
-    }
-    const users = await DBselect('users', '*', {id: req.params.id}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
-    if(!users) return;
-    const ratings = await getUserRatings(req, res, next, false);
-    const user = ratings.filter(r => r.user_id == users[0].id);
-    users[0].ratings = user;
-    send(200, res, "success", users, ['pass', 'password']);
-    
+const getUser = async ( req, res, next, returnValue = true) => {
+    return new Promise(async (resolve, reject) => {
+        const param = req.url.split("/").includes("me") ? "me" : req.url.split("/")[1];
+        if(param == "me") {
+            req.params.id = req.owner.id;
+        }
+        const users = await DBselect('users', '*', {id: req.params.id}).catch(err => { if(returnValue) sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); reject(false); });
+        if(!users) reject(false);
+        const ratings = await getUserRatings(req, res, next, false);
+        const user = ratings.filter(r => r.user_id == users[0].id);
+        users[0].ratings = user;
+        if(returnValue) send(200, res, "success", users, ['pass', 'password']);
+        resolve(users);
+    });
 };
 
 const createUser = async ( req, res, next) => {
