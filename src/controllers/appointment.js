@@ -6,26 +6,98 @@ import { objectWithoutKey } from '../middleware/plugins.js';
 import { DBselect, DBinsert, DBupdate, DBdelete } from '../database/index.js';
 import { getDoctor, getDoctors } from './doctors.js';
 import { getUser, getUsers } from './users.js';
+import moment from 'moment';
+import prettyMilliseconds from 'pretty-ms';
+
+const improveAppointments = async (appointments, doctors) => {
+    return new Promise(async (resolve, reject) => {
+
+        let docApps = appointments.map(a => a.doctor_id);
+        docApps = [...new Set(docApps)];
+        let doctorsApps = [];
+        docApps.forEach(doctor => {
+            doctorsApps.push({
+                doctorID: doctor, 
+                doctor: doctors.filter(d => d.id == doctor)[0], 
+                appointments: appointments.filter(a => a.doctor_id == doctor)
+            });
+        });
+
+        doctorsApps.forEach(doctor => {
+            doctor.appointments.forEach(appointment => {
+                let appCreateTimestamp = new Date(moment(appointment.created_at).format("ddd, MM MMM YYYY HH:mm:ss") + " GMT");
+                doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appointments.filter(a => a.id == appointment.id)[0].created_at = appCreateTimestamp;
+                doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appointments.filter(a => a.id == appointment.id)[0].appDateTimestamp = new Date(new Date(appointment.app_date).setHours(0, 0, 0, 0)).getTime();
+                doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appointments.filter(a => a.id == appointment.id)[0].appCreateTimestamp = appCreateTimestamp.getTime();
+            });
+        });
+
+        doctorsApps.forEach(doctor => {
+            doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDateArray = doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appointments.map(a => a.appDateTimestamp);
+            doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDateArray = [...new Set(doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDateArray)];
+            doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate = [];
+            doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDateArray.forEach(date => {
+                doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.push({
+                    date: date,
+                    appointments: doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appointments.filter(a => a.appDateTimestamp == date)
+                });
+            });
+        });
+
+        doctorsApps.forEach(doctor => {
+            doctor.appsDate.forEach(date => {
+                doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.filter(app => app.date == date.date)[0].appointments = date.appointments.sort(function (a, b) {   
+                    return a.appCreateTimestamp - b.appCreateTimestamp;
+                });
+            });
+        });
+
+        let newAppointments = [];
+
+        doctorsApps.forEach(doctor => {
+            doctor.appsDate.forEach(date => {
+                let DocAppAppointments = doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.filter(app => app.date == date.date)[0].appointments.map(a => a.id);
+                let DocAppAppointmentsTurnNow = doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.filter(app => app.date == date.date)[0].appointments.filter(a => a.completed == 0 || a.completed == '0')?.map(a => a?.id)[0];
+                let turnNow = DocAppAppointments.indexOf(DocAppAppointmentsTurnNow) + 1;
+                turnNow = turnNow == 0 ? DocAppAppointments.length : turnNow;
+                date.appointments.forEach(appointment => {
+                    let turn = DocAppAppointments.indexOf(appointment.id) + 1;
+                    doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.filter(app => app.date == date.date)[0].appointments.filter(appoint => appoint.id == appointment.id)[0].turn = turn;
+                    doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.filter(app => app.date == date.date)[0].appointments.filter(appoint => appoint.id == appointment.id)[0].turnNow = turnNow;
+                    doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.filter(app => app.date == date.date)[0].appointments.filter(appoint => appoint.id == appointment.id)[0].turnLeft = turn - turnNow;
+                    let doctor_default_patient_time = doctor.doctor?.default_patient_time ? doctor.doctor.default_patient_time : 600;
+                    doctor_default_patient_time = doctor_default_patient_time * 1000;
+                    let turnLeftDuration = "finished";
+                    turnLeftDuration = (turn - turnNow) > 0 ? (turn - turnNow) * doctor_default_patient_time : 0;
+                    doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.filter(app => app.date == date.date)[0].appointments.filter(appoint => appoint.id == appointment.id)[0].turnLeftDuration = turnLeftDuration;
+                    doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.filter(app => app.date == date.date)[0].appointments.filter(appoint => appoint.id == appointment.id)[0].turnLeftDurationString = prettyMilliseconds(turnLeftDuration);
+                    newAppointments.push(doctorsApps.filter(d => d.doctorID == doctor.doctorID)[0].appsDate.filter(app => app.date == date.date)[0].appointments.filter(appoint => appoint.id == appointment.id)[0]);
+                    if(newAppointments.length == appointments.length) resolve(newAppointments);
+                });
+            });
+        });
+
+    });
+}
 
 const getAppointments = async ( req, res, next) => {
     
     const appointments = await DBselect('appointments', '*').catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!appointments) return;
     req.query.specific = [...new Set(appointments.map(a => a.doctor_id))].join(',');
-    console.log("appointments doctors : ", req.query.specific);
     const doctors = await getDoctors(req, res, next, false);
-    console.log("appointments doctors : ", doctors);
     appointments.forEach(appointment => {
         appointments.filter(u => u.id == appointment.id)[0].doctor = doctors.filter(u => u.id == appointment.doctor_id).length > 0 ? objectWithoutKey(doctors.filter(u => u.id == appointment.doctor_id)[0], "pass") : null;
     });
     req.query.specific = [...new Set(appointments.map(a => a.owner_id))].join(',');
-    console.log("appointments users : ", req.query.specific);
     const users = await getUsers(req, res, next, false);
-    console.log("appointments users : ", users);
     appointments.forEach(appointment => {
         appointments.filter(u => u.id == appointment.id)[0].owner = users.filter(u => u.id == appointment.owner_id).length > 0 ? objectWithoutKey(users.filter(u => u.id == appointment.owner_id)[0], "pass") : null;
     });
-    send(200, res, "success", appointments);
+
+    let newAppointments = await improveAppointments(appointments, doctors);
+
+    send(200, res, "success", /*appointments*/newAppointments);
 
 };
 
@@ -36,20 +108,17 @@ const getUsersAppointments = async ( req, res, next) => {
         const appointments = await DBselect('appointments', '*', "owner_id IN ('" + specifics + "')").catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
         if(!appointments) return;
         req.query.specific = [...new Set(appointments.map(a => a.doctor_id))].join(',');
-        console.log("appointments doctors : ", req.query.specific);
         const doctors = await getDoctors(req, res, next, false);
-        console.log("appointments doctors : ", doctors);
         appointments.forEach(appointment => {
             appointments.filter(u => u.id == appointment.id)[0].doctor = doctors.filter(u => u.id == appointment.doctor_id).length > 0 ? objectWithoutKey(doctors.filter(u => u.id == appointment.doctor_id)[0], "pass") : null;
         });
         req.query.specific = [...new Set(appointments.map(a => a.owner_id))].join(',');
-        console.log("appointments users : ", req.query.specific);
         const users = await getUsers(req, res, next, false);
-        console.log("appointments users : ", users);
         appointments.forEach(appointment => {
             appointments.filter(u => u.id == appointment.id)[0].owner = users.filter(u => u.id == appointment.owner_id).length > 0 ? objectWithoutKey(users.filter(u => u.id == appointment.owner_id)[0], "pass") : null;
         });
-        send(200, res, "success", appointments);
+        let newAppointments = await improveAppointments(appointments, doctors);
+        send(200, res, "success", newAppointments);
         return;
     }
     sendError({response:res, status:statusCodes.BAD_REQUEST, message:"You should provide users id in 'specific' query parameter"});
@@ -65,9 +134,7 @@ const getUserAppointments = async ( req, res, next) => {
     const appointments = await DBselect('appointments', '*', {owner_id: req.params.id}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!appointments) return;
     req.params.id = req.params.id;
-    console.log("appointments users : ", req.params.id);
     const users = await getUser(req, res, next, false);
-    console.log("appointments users : ", users);
     appointments.forEach(appointment => {
         appointments.filter(u => u.id == appointment.id)[0].owner = users.filter(u => u.id == appointment.owner_id).length > 0 ? objectWithoutKey(users.filter(u => u.id == appointment.owner_id)[0], "pass") : null;
     });
@@ -78,7 +145,8 @@ const getUserAppointments = async ( req, res, next) => {
     appointments.forEach(appointment => {
         appointments.filter(u => u.id == appointment.id)[0].doctor = doctors.filter(u => u.id == appointment.doctor_id).length > 0 ? objectWithoutKey(doctors.filter(u => u.id == appointment.doctor_id)[0], "pass") : null;
     });
-    send(200, res, "success", appointments);
+    let newAppointments = await improveAppointments(appointments, doctors);
+    send(200, res, "success", newAppointments);
 
 };
 
@@ -96,13 +164,12 @@ const getDoctorsAppointments = async ( req, res, next) => {
             appointments.filter(u => u.id == appointment.id)[0].doctor = doctors.filter(u => u.id == appointment.doctor_id).length > 0 ? objectWithoutKey(doctors.filter(u => u.id == appointment.doctor_id)[0], "pass") : null;
         });
         req.query.specific = [...new Set(appointments.map(a => a.owner_id))].join(',');
-        console.log("appointments users : ", req.query.specific);
         const users = await getUsers(req, res, next, false);
-        console.log("appointments users : ", users);
         appointments.forEach(appointment => {
             appointments.filter(u => u.id == appointment.id)[0].owner = users.filter(u => u.id == appointment.owner_id).length > 0 ? objectWithoutKey(users.filter(u => u.id == appointment.owner_id)[0], "pass") : null;
         });
-        send(200, res, "success", appointments);
+        let newAppointments = await improveAppointments(appointments, doctors);
+        send(200, res, "success", newAppointments);
         return;
     }
     sendError({response:res, status:statusCodes.BAD_REQUEST, message:"You should provide doctors id in 'specific' query parameter"});
@@ -125,13 +192,12 @@ const getDoctorAppointments = async ( req, res, next) => {
         appointments.filter(u => u.id == appointment.id)[0].doctor = doctors.filter(u => u.id == appointment.doctor_id).length > 0 ? objectWithoutKey(doctors.filter(u => u.id == appointment.doctor_id)[0], "pass") : null;
     });
     req.query.specific = [...new Set(appointments.map(a => a.owner_id))].join(',');
-    console.log("appointments users : ", req.query.specific);
     const users = await getUsers(req, res, next, false);
-    console.log("appointments users : ", users);
     appointments.forEach(appointment => {
         appointments.filter(u => u.id == appointment.id)[0].owner = users.filter(u => u.id == appointment.owner_id).length > 0 ? objectWithoutKey(users.filter(u => u.id == appointment.owner_id)[0], "pass") : null;
     });
-    send(200, res, "success", appointments);
+    let newAppointments = await improveAppointments(appointments, doctors);
+    send(200, res, "success", newAppointments);
 
 };
 
@@ -149,13 +215,12 @@ const getPatientsAppointments = async ( req, res, next) => {
             appointments.filter(u => u.id == appointment.id)[0].doctor = doctors.filter(u => u.id == appointment.doctor_id).length > 0 ? objectWithoutKey(doctors.filter(u => u.id == appointment.doctor_id)[0], "pass") : null;
         });
         req.query.specific = [...new Set(appointments.map(a => a.owner_id))].join(',');
-        console.log("appointments users : ", req.query.specific);
         const users = await getUsers(req, res, next, false);
-        console.log("appointments users : ", users);
         appointments.forEach(appointment => {
             appointments.filter(u => u.id == appointment.id)[0].owner = users.filter(u => u.id == appointment.owner_id).length > 0 ? objectWithoutKey(users.filter(u => u.id == appointment.owner_id)[0], "pass") : null;
         });
-        send(200, res, "success", appointments);
+        let newAppointments = await improveAppointments(appointments, doctors);
+        send(200, res, "success", newAppointments);
         return;
     }
     sendError({response:res, status:statusCodes.BAD_REQUEST, message:"You should provide patients name in 'specific' query parameter"});
@@ -174,13 +239,12 @@ const getPatientAppointments = async ( req, res, next) => {
         appointments.filter(u => u.id == appointment.id)[0].doctor = doctors.filter(u => u.id == appointment.doctor_id).length > 0 ? objectWithoutKey(doctors.filter(u => u.id == appointment.doctor_id)[0], "pass") : null;
     });
     req.query.specific = [...new Set(appointments.map(a => a.owner_id))].join(',');
-    console.log("appointments users : ", req.query.specific);
     const users = await getUsers(req, res, next, false);
-    console.log("appointments users : ", users);
     appointments.forEach(appointment => {
         appointments.filter(u => u.id == appointment.id)[0].owner = users.filter(u => u.id == appointment.owner_id).length > 0 ? objectWithoutKey(users.filter(u => u.id == appointment.owner_id)[0], "pass") : null;
     });
-    send(200, res, "success", appointments);
+    let newAppointments = await improveAppointments(appointments, doctors);
+    send(200, res, "success", newAppointments);
 
 };
 
@@ -221,6 +285,7 @@ const createAppointment = async (req, res, next) => {
         req.body.owner_id = req.owner.id;
         req.body.doctor_id = req.params.id;
         req.body.id = generateId();
+        req.body.created_at = new Date().toISOString();
         let app_date = req.body.app_date;
 
         console.log("checkDateOnDoctor: ", app_date);
