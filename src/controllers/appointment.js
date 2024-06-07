@@ -316,7 +316,7 @@ const checkAppointment = async ( req, res, next) => {
     if(!result) return;
     if(result.length == 0) {
         sendError({response:res, status:statusCodes.NOT_FOUND, message:"Appointment not found"});
-    } else if(result[0]?.owner_id == userORdoctor || result[0]?.doctor_id == userORdoctor) {
+    } else if(result[0]?.owner_id == userORdoctor || result[0]?.doctor_id == userORdoctor || req.owner.role == "admin") {
         next();
     } else {
         sendError({response:res, status:statusCodes.FORBIDDEN, message:"You are not authorized to access this appointment"});
