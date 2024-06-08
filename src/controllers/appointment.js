@@ -101,6 +101,22 @@ const getAppointments = async ( req, res, next) => {
 
 };
 
+const getSpecificAppointments = async (req, res, next) => {
+    return new Promise(async (resolve, reject) => {
+        if(req.query.specific) {
+            let specifics = req.query.specific.split(',').join("','");
+            const appointments = await DBselect('appointments', '*', "id IN ('" + specifics + "')").catch(err => { reject(err); return false; });
+            if(!appointments) {
+                reject("Could not get appointments");
+                return;
+            }
+            resolve(appointments);
+        }
+        reject("You should provide appointments id in 'specific' query parameter");
+        return;
+    });
+};
+
 const getUsersAppointments = async ( req, res, next) => {
 
     if(req.query.specific) {
@@ -340,7 +356,8 @@ const completeAppointment = async ( req, res, next) => {
 }
   
 export {
-    getAppointments, 
+    getAppointments,
+    getSpecificAppointments,
     getUsersAppointments, 
     getUserAppointments, 
     getDoctorsAppointments, 
