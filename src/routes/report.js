@@ -1,5 +1,5 @@
 import express from 'express';
-import {getReports, getUsersReports, getUserReports, getDoctorsReports, getDoctorReports, getPatientsReports, getPatientReports, createReport, checkReport} from '../controllers/report.js';
+import {getReports, getUsersReports, getUserReports, getDoctorsReports, getDoctorReports, getPatientsReports, getPatientReports, createReport, checkReport, checkReportToDelete, deleteReport} from '../controllers/report.js';
 import { checkRequired } from '../middleware/plugins.js';
 import { checkToken, checkRole } from '../middleware/authentication.js';
 import { call } from '../middleware/handleError.js';
@@ -16,5 +16,6 @@ router.get('/doctors/:id', call(checkToken), call(checkRole, "admin"), call(getD
 router.get('/patients', call(checkToken), call(checkRole, "admin"), call(getPatientsReports));
 router.get('/patients/:name', call(checkToken), call(checkRole, "admin"), call(getPatientReports));
 router.post('/:id/:appId', call(checkToken), call(checkRole, ["doctor", "unsystem"]), call(checkRequired, ['diagnosis', 'medicines']), call(checkReport), call(createReport));
+router.delete('/:id', call(checkToken), call(checkRole, ["doctor", "admin"]), call(checkReportToDelete), call(deleteReport));
 
 export default router;
