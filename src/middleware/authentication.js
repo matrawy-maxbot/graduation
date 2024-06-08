@@ -72,6 +72,7 @@ const checkRole = async ( req, res, next, role) => {
                 sendError({ status: statusCodes.FORBIDDEN, message: 'cannot access this route with system token', response:res });
                 return false;
             }
+            req.systemToken = true;
             next();
             return false;
         }
