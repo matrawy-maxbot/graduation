@@ -8,7 +8,7 @@ import { getUser, getUsers } from './users.js';
 import { getSpecificAppointments } from './appointment.js';
 import { objectWithoutKey } from '../middleware/plugins.js';
 
-const improveReport = async (reports) => {
+const improveReport = async (req, res, next, reports) => {
     return new Promise(async (resolve, reject) => {
         req.query.specific = [...new Set(reports.map(r => r.doctor_id))].join(',');
         const doctors = await getDoctors(req, res, next, false);
@@ -48,7 +48,7 @@ const getReports = async ( req, res, next) => {
     const reports = await DBselect('report', '*').catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!reports) return;
 
-    let improvedReports = await improveReport(reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+    let improvedReports = await improveReport(req, res, next, reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
 
     send(statusCodes.OK, res, "success", improvedReports);
 
@@ -61,7 +61,7 @@ const getUsersReports = async ( req, res, next) => {
         const reports = await DBselect('report', '*', "user_id IN ('" + specifics + "')").catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
         if(!reports) return;
 
-        let improvedReports = await improveReport(reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+        let improvedReports = await improveReport(req, res, next, reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
 
         send(statusCodes.OK, res, "success", improvedReports);
         return;
@@ -79,7 +79,7 @@ const getUserReports = async ( req, res, next) => {
     const reports = await DBselect('report', '*', {user_id: req.params.id}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!reports) return;
 
-    let improvedReports = await improveReport(reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+    let improvedReports = await improveReport(req, res, next, reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
 
     send(statusCodes.OK, res, "success", improvedReports);
 
@@ -92,7 +92,7 @@ const getDoctorsReports = async ( req, res, next) => {
         const reports = await DBselect('report', '*', "doctor_id IN ('" + specifics + "')").catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
         if(!reports) return;
 
-        let improvedReports = await improveReport(reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+        let improvedReports = await improveReport(req, res, next, reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
 
         send(statusCodes.OK, res, "success", improvedReports);
         return;
@@ -110,7 +110,7 @@ const getDoctorReports = async ( req, res, next) => {
     const reports = await DBselect('report', '*', {doctor_id: req.params.id}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!reports) return;
 
-    let improvedReports = await improveReport(reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+    let improvedReports = await improveReport(req, res, next, reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
 
     send(statusCodes.OK, res, "success", improvedReports);
 
@@ -126,7 +126,7 @@ const getPatientsReports = async ( req, res, next) => {
         const reports = await DBselect('report', '*', "appointment_id IN ('" + appointmentsID.map(app => app.id).join("','") + "')").catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
         if(!reports) return;
 
-        let improvedReports = await improveReport(reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+        let improvedReports = await improveReport(req, res, next, reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
 
         send(statusCodes.OK, res, "success", improvedReports);
         return;
@@ -142,7 +142,7 @@ const getPatientReports = async ( req, res, next) => {
     const reports = await DBselect('report', '*', {appointment_id: appointmentID.map(app => app.id)}).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
     if(!reports) return;
 
-    let improvedReports = await improveReport(reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
+    let improvedReports = await improveReport(req, res, next, reports).catch(err => { sendError({status:statusCodes.INTERNAL_SERVER_ERROR, response:res, message:err}); return false; });
 
     send(statusCodes.OK, res, "success", improvedReports);
 
