@@ -22,7 +22,7 @@ const improveReport = async (req, res, next, reports) => {
 
         req.query.specific = [...new Set(reports.map(r => r.user_id))].join(',');
         const users = await getUsers(req, res, next, false);
-        if(!doctors) {
+        if(!users) {
             reject("Can't get users");
             return;
         }
@@ -32,7 +32,7 @@ const improveReport = async (req, res, next, reports) => {
 
         req.query.specific = [...new Set(reports.map(r => r.appointment_id))].join(',');
         const appointments = await getSpecificAppointments(req, res, next);
-        if(!doctors) {
+        if(!appointments) {
             reject("Can't get appointments");
             return;
         }
