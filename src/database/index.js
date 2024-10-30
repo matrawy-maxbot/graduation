@@ -370,11 +370,11 @@ const DBinit = async (insertTestValues = false) => {
 
         INSERT INTO \`doctors\` (id, name, phone, pass, avatar, speciality, expertment) 
         VALUES 
-        (13579, 'Elena Rodriguez', '+1122334455', 'elena_pass123', 'https://example.com/elena_avatar.jpg', 'Computer Science', 'Machine Learning'),
-        (98765, 'Daniel Garcia', '+1234567890', 'daniel_password!', 'https://example.com/daniel_avatar.jpg', 'Electrical Engineering', 'Robotics'),
-        (54321, 'Sophie Clark', '+1987654321', 'sophie1234', 'https://example.com/sophie_avatar.jpg', 'Biotechnology', 'Genetic Engineering'),
-        (24680, 'James Wilson', '+5555555555', 'james_pass_123', 'https://example.com/james_avatar.jpg', 'Medicine', 'Clinical Trials'),
-        (12345, 'Isabella Brown', '+9876543210', 'isabellaPass!', 'https://example.com/isabella_avatar.jpg', 'Physics', 'Quantum Mechanics');
+        (13579, 'Elena Rodriguez', '+1122334455', 'elena_pass123', 'https://example.com/elena_avatar.jpg', 3, 'Gastroenterology'),
+        (98765, 'Daniel Garcia', '+1234567890', 'daniel_password!', 'https://example.com/daniel_avatar.jpg', 5, 'Ophthalmology'),
+        (54321, 'Sophie Clark', '+1987654321', 'sophie1234', 'https://example.com/sophie_avatar.jpg', 6, 'Pediatrics'),
+        (24680, 'James Wilson', '+5555555555', 'james_pass_123', 'https://example.com/james_avatar.jpg', 10, 'Oncology'),
+        (12345, 'Isabella Brown', '+9876543210', 'isabellaPass!', 'https://example.com/isabella_avatar.jpg', 14, 'Hematology');
 
         INSERT INTO \`notifications\` (id, source, destination, content) 
         VALUES 
