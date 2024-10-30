@@ -42,7 +42,7 @@ const envContent = {
     "DB_HOST":"sql.freedb.tech",
     "DB_PORT":3306,
     "DB_USER":"freedb_graduationhospitaladmin",
-    "DB_PASS":"MYA!DxFBxTk6??9",
+    "DB_PASS":"?s!7TVVZeWK?nak",
     "DB_NAME":"freedb_graduationhospital"
 };
 
